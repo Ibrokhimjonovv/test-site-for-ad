@@ -1,0 +1,22 @@
+{
+  "name": "test_app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-input/mask": "^2.0.4",
+    "@vercel/kv": "^3.0.0",
+    "next": "15.3.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-input-mask": "^2.0.4",
+    "react-input-mask-next": "^3.0.0-alpha.12",
+    "sass": "^1.87.0",
+    "scss": "^0.2.4"
+  }
+}
