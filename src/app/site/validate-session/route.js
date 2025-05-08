@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import sessions from "@/lib/session-store";
+import { NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 
 export async function POST(request) {
   try {
     const { sessionId } = await request.json();
-
+    
     if (!sessionId) {
       return NextResponse.json(
         { valid: false, message: "Session ID not provided" },
@@ -12,8 +12,12 @@ export async function POST(request) {
       );
     }
 
-    const sessionData = sessions.get(sessionId);
+    // Sessionni tekshirish
 
+    console.log(sessionId);
+    
+    const sessionData = await kv.get(`session:${sessionId}`);
+    
     if (!sessionData) {
       return NextResponse.json(
         { valid: false, message: "Session not found" },
@@ -21,7 +25,8 @@ export async function POST(request) {
       );
     }
 
-    if (sessionData.status === "completed") {
+    // Session allaqachon yakunlangan bo'lsa
+    if (sessionData.status === 'completed') {
       return NextResponse.json(
         { valid: false, message: "Session already completed" },
         { status: 403 }
