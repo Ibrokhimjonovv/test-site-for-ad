@@ -14,7 +14,6 @@ export async function POST(request) {
 
     // Sessionni tekshirish
 
-    console.log(sessionId);
     
     const sessionData = await kv.get(`session:${sessionId}`);
     
