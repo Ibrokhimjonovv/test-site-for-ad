@@ -53,19 +53,17 @@ const tests = [
   }
 ];
 
-function Modal({ children, onClose }) {
+
+
+function Modal({ children, onClose, showModal }) {
   return (
-    <div className="modal-overlay">
+    <div className={`modal-overlay ${showModal ? "active" : ""}`}>
       <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>
-          &times;
-        </button>
         {children}
       </div>
     </div>
   );
 }
-
 export default function TestsLayout() {
   const router = useRouter();
   const pathname = usePathname();
@@ -80,18 +78,18 @@ export default function TestsLayout() {
 
   useEffect(() => {
     const currentCategory = pathname?.split('/').pop();
-    
+
     if (pathname === '/tests/all' || pathname === '/tests') {
       setActiveButton('all');
       setFilteredTests(tests);
     } else if (currentCategory) {
       setActiveButton(currentCategory);
-      const category = categories.find(function(cat) { 
+      const category = categories.find(function (cat) {
         return formatCategoryLink(cat.categoryTitle) === currentCategory;
       });
-      
+
       if (category) {
-        const filtered = tests.filter(function(test) { 
+        const filtered = tests.filter(function (test) {
           return test.categoryId === category.id;
         });
         setFilteredTests(filtered);
@@ -126,10 +124,10 @@ export default function TestsLayout() {
 
   function startTest() {
     if (!selectedTest) return;
-    
+
     // Generate a unique session ID
     const sessionId = crypto.randomUUID();
-    
+
     // Redirect to the test page with the session ID
     router.push('/tests/' + formatTestName(selectedTest.testTitle) + '/' + selectedTest.id + '/' + sessionId);
   }
@@ -144,13 +142,13 @@ export default function TestsLayout() {
         >
           Barchasi
         </button>
-        {categories.map(function(category, index) {
+        {categories.map(function (category, index) {
           const formattedLink = formatCategoryLink(category.categoryTitle);
           return (
             <button
               key={index}
               className={activeButton === formattedLink ? 'active' : ''}
-              onClick={function() { handleCategoryClick(category.categoryTitle); }}
+              onClick={function () { handleCategoryClick(category.categoryTitle); }}
             >
               {category.categoryTitle}
               {category.isNew && <div className="new active">Yangi</div>}
@@ -161,12 +159,12 @@ export default function TestsLayout() {
 
       <div className="tests-content">
         {filteredTests.length > 0 ? (
-          filteredTests.map(function(test, index) {
+          filteredTests.map(function (test, index) {
             return (
-              <div 
-                className="test-card" 
+              <div
+                className="test-card"
                 key={index}
-                onClick={function() { handleTestClick(test); }}
+                onClick={function () { handleTestClick(test); }}
               >
                 <div className="card-top">
                   <div className="card-top-top">
@@ -192,35 +190,27 @@ export default function TestsLayout() {
       </div>
 
       {/* Modal for test confirmation */}
-      {showModal && selectedTest && (
-        <Modal onClose={function() { setShowModal(false); }}>
-          <div className="test-confirmation-modal">
-            <h2>{selectedTest.testTitle}</h2>
-            <p>{selectedTest.testDescription}</p>
-            
-            <div className="test-details">
-              <p><strong>Testlar soni:</strong> {selectedTest.testCount}</p>
-              <p><strong>Vaqt:</strong> {selectedTest.testTime} daqiqa</p>
-              <p><strong>Narxi:</strong> {selectedTest.testPrice}</p>
-            </div>
-            
-            <div className="modal-actions">
-              <button 
-                className="cancel-button"
-                onClick={function() { setShowModal(false); }}
-              >
-                Bekor qilish
-              </button>
-              <button 
-                className="start-button"
-                onClick={startTest}
-              >
-                Testni boshlash
-              </button>
-            </div>
+      {/* {showModal && selectedTest && (
+      )} */}
+      <Modal onClose={() => setShowModal(false)} showModal={showModal}>
+        <div className="test-confirmation-modal">
+          <h2>{selectedTest?.testTitle}</h2>
+          <p>{selectedTest?.testDescription}</p>
+          <div className="test-details">
+            <p><span>Testlar soni:</span> {selectedTest?.testCount}</p>
+            <p><span>Vaqt:</span> {selectedTest?.testTime} daqiqa</p>
+            <p><span>Narxi:</span> {selectedTest?.testPrice}</p>
           </div>
-        </Modal>
-      )}
+          <div className="modal-actions">
+            <button className="cancel-button" onClick={() => setShowModal(false)}>
+              Bekor qilish
+            </button>
+            <button className="start-button" onClick={startTest}>
+              Testni boshlash
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
