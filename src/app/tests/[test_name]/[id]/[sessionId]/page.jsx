@@ -335,7 +335,7 @@ const ProgressTracker = ({
 
   const groupQuestionsByScience = () => {
     const grouped = {};
-    
+
     test.science.forEach(id => {
       const title = sciences.find(s => s.id === id)?.title || "";
       grouped[id] = {
@@ -403,9 +403,8 @@ const ProgressTracker = ({
               return (
                 <div
                   key={globalIndex}
-                  className={`circle ${status} ${
-                    globalIndex === currentQuestionIndex ? "current" : ""
-                  }`}
+                  className={`circle ${status} ${globalIndex === currentQuestionIndex ? "current" : ""
+                    }`}
                   onClick={() => setCurrentQuestionIndex(globalIndex)}
                   title={`Savol ${globalIndex + 1} - ${answerText ? `Tanlangan variant: ${answerText}` : 'Javob berilmagan'}`}
                 >

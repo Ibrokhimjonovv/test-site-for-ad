@@ -144,7 +144,7 @@ const Layout = () => {
         setErrors({});
 
         try {
-            const response = await fetch('/site/register', {
+            const response = await fetch('/site/user/register/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

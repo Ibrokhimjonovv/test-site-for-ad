@@ -76,7 +76,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('/site/auth', {
+            const response = await fetch('/site/user/auth/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -94,18 +94,15 @@ const Login = () => {
                 throw new Error(result.error || 'Kirish muvaffaqiyatsiz');
             }
 
-            // Muvaffaqiyatli kirish
-            localStorage.setItem('access', result.access); // Token saqlash
-            localStorage.setItem('refresh', result.refresh); // Token saqlash
+            localStorage.setItem('access', result.access);
+            localStorage.setItem('refresh', result.refresh);
             setLoginStat(false);
-            resteForm()
-
-            // router.push('/dashboard'); // Bosh sahifaga yo'naltirish
+            resteForm();
 
         } catch (error) {
             setErrors(prev => ({
                 ...prev,
-                form: error || 'Xatolik yuz berdi'
+                form: error.message || 'Xatolik yuz berdi' // Fixed error rendering
             }));
         } finally {
             setLoading(false);
