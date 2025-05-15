@@ -1,39 +1,380 @@
-"use client";
-import React, { useContext, useState } from 'react';
-import "./layout.scss";
-import { useMask } from '@react-input/mask';
-import { AccessContext } from '@/contexts/contexts';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+"use client"
 
-const Layout = () => {
-    const [formData, setFormData] = useState({
-        first_name: '',
-        last_name: '',
-        username: '',
-        phone_number: '',
-        password: '',
-        confirm_password: '',
-        action: 'signup'
-    });
-    const [show, setShow] = useState({
-        password: true,
-        confirm_password: true
-    });
-    const [errors, setErrors] = useState({
-        first_name: '',
-        last_name: '',
-        username: '',
-        phone_number: '',
-        password: '',
-        confirm_password: ''
-    });
+import React, { useState, useEffect, useContext, useRef } from "react";
+import "./layout.scss";
+import { useRouter } from "next/navigation";
+import { useMask } from '@react-input/mask';
+import Link from "next/link";
+import { AccessContext } from "@/contexts/contexts";
+
+
+
+const regionsURL =
+    "https://raw.githubusercontent.com/MIMAXUZ/uzbekistan-regions-data/master/JSON/regions.json";
+const districtsURL =
+    "https://raw.githubusercontent.com/MIMAXUZ/uzbekistan-regions-data/master/JSON/districts.json";
+
+const Signup = () => {
+    const [step, setStep] = useState(1);
+    const [smsErr, setSmsErr] = useState("");
+    const [phone, setPhone] = useState("");
+    const [regions, setRegions] = useState([]);
+    const [selectedRegion, setSelectedRegion] = useState("");
+    const [districts, setDistricts] = useState([]);
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
-    const { registerStat, setRegisterStat, setLoginStat, loginStat } = useContext(AccessContext);
+    const [formData, setFormData] = useState({
+        name: "",
+        username: "",
+        phone_number: phone,
+        surname: "",
+        email: "",
+        password: "",
+        confirmPassword: '',
+        age: "",
+        gender: "male",
+    });
+
+    const [code, setCode] = useState(Array(4).fill(""));
+    const [countdown, setCountdown] = useState(180); // 3 minutes in seconds
+    const [canResend, setCanResend] = useState(false);
+    const inputRefs = useRef([]);
     const router = useRouter();
+    const { loginStat, setLoginStat, registerStat, setRegisterStat } = useContext(AccessContext)
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    };
+
+
+    useEffect(() => {
+        setFormData((prev) => ({ ...prev, phone_number: phone }));
+    }, [phone]);
+
+    useEffect(() => {
+        const fetchRegions = async () => {
+            try {
+                const response = await fetch(regionsURL);
+                if (response.ok) {
+                    const data = await response.json();
+                    setRegions(data);
+                } else {
+                    console.error("Viloyatlarni olishda xatolik");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        fetchRegions();
+    }, []);
+
+    const handleRegionChange = async (event) => {
+        const selectedRegionId = event.target.value;
+        setSelectedRegion(selectedRegionId);
+        try {
+            const response = await fetch(districtsURL);
+            if (response.ok) {
+                const data = await response.json();
+                const regionDistricts = data.filter(
+                    (district) => district.region_id === Number(selectedRegionId)
+                );
+                setDistricts(regionDistricts);
+            } else {
+                console.error("Tumanlarni olishda xatolik");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+        setSelectedDistrict("");
+    };
+
+    const handleDistrictChange = (event) => {
+        setSelectedDistrict(event.target.value);
+    };
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        let newValue = value;
+
+        if (name === "age") {
+            // Faqat raqam va nuqtalarga ruxsat beramiz
+            newValue = value.replace(/[^0-9.]/g, '');
+
+            // Avtomatik nuqta qo'yish
+            if (newValue.length === 2 && formData.age.length === 1) {
+                newValue += '.';
+            } else if (newValue.length === 5 && formData.age.length === 4) {
+                newValue += '.';
+            }
+
+            // Maksimal 10 ta belgi (DD.MM.YYYY)
+            newValue = newValue.substring(0, 10);
+        }
+
+        setFormData({
+            ...formData,
+            [name]: newValue,
+        });
+    };
+
+    const validateDate = (date) => {
+        // Formatni tekshirish (DD.MM.YYYY)
+        const regex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+        if (!regex.test(date)) return "Iltimos, DD.MM.YYYY formatida kiriting";
+
+        const [day, month, year] = date.split('.').map(Number);
+        const currentYear = new Date().getFullYear();
+
+        // Kunni tekshirish
+        if (day < 1 || day > 31) return "Kun noto'g'ri (1-31 oralig'ida bo'lishi kerak)";
+
+        // Oyni tekshirish
+        if (month < 1 || month > 12) return "Oy noto'g'ri (1-12 oralig'ida bo'lishi kerak)";
+
+        // Yilni tekshirish
+        if (year < 1900 || year > currentYear) {
+            return `Yil noto'g'ri (1900-${currentYear} oralig'ida bo'lishi kerak)`;
+        }
+
+        return ""; // Xato yo'q
+    };
+
+    const validateForm = () => {
+        let errors = {};
+        if (!formData.name.trim()) errors.name = "Ism kiriting!";
+        if (!formData.surname.trim()) errors.surname = "Familiya kiriting!";
+        if (!formData.username.trim()) errors.username = "Foydalanuvchi nomini kiriting!";
+        if (!formData.age.trim()) {
+            errors.age = "Tug'ilgan sanani kiriting!";
+        } else {
+            const ageError = validateDate(formData.age);
+            if (ageError) errors.age = ageError;
+        }
+        if (formData.password.length < 6) {
+            errors.password = "Parol kamida 6 ta belgidan tashkil topishi kerak!";
+        }
+
+        // Parollarni solishtirish tekshiruvi
+        if (formData.password !== formData.confirmPassword) {
+            errors.confirmPassword = "Parollar mos emas!";
+        }
+        if (!selectedRegion) errors.region = "Viloyat kiriting!";
+        if (!selectedDistrict) errors.district = "Tuman kiriting!";
+        if (formData.password.length < 6) errors.password = "Parol kamida 6 ta belgidan tashkil topishi kerak!";
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!validateForm()) return;
+        setLoading(true);
+        try {
+            const response = await fetch(`/site/user/register/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    province: selectedRegion,
+                    district: selectedDistrict,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setLoginStat(!loginStat);
+                setRegisterStat(!registerStat)
+                setErrors({ login: "", password: "" })
+                setSuccessM(true);
+                setTimeout(() => {
+                    setSuccessM(false);
+                }, 5000);
+            } else {
+                const errorData = await response.json();
+                alert("Error: " + (errorData.message || "Noma'lum xato"));
+            }
+        } catch (error) {
+            console.log("Tarmoq xatosi");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        let timer;
+        if (step === 2 && countdown > 0) {
+            timer = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setCanResend(true);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [step, countdown]);
+
+    const [smsLimitError, setSmsLimitError] = useState("");
+
+    useEffect(() => {
+        setFormData(prev => ({
+            ...prev,
+            phone_number: phone.replace(/\D/g, '').slice(-9) // Store just the 9 digits
+        }));
+    }, [phone]);
+
+    const sendSMS = async () => {
+
+        if (!validatePhone(phone)) {
+            setErrors(prev => ({ ...prev, phone: "To'liq telefon raqam kiriting!" }));
+            return;
+        }
+
+        // Telefon raqamni tozalash
+        const cleanedPhone = phone.replace(/\D/g, '');
+
+        // Formatni tekshirish (998XXXXXXXXX)
+        if (!/^998\d{9}$/.test(cleanedPhone)) {
+            setErrors(prev => ({ ...prev, phone: "Iltimos, to'g'ri telefon raqamni kiriting!" }));
+            return;
+        }
+        setLoading(true);
+        setSmsLimitError(""); // Xatoliklarni tozalash
+        try {
+            const res = await fetch(`/site/send-sms/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone: cleanedPhone }),
+            });
+
+            const data = await res.json(); // Javobni JSON formatida olish
+
+            if (res.ok) {
+                setStep(2);
+                setCountdown(180);
+                setCanResend(false);
+            } else {
+                // Agar API dan xato kelsa
+                setSmsLimitError(data.error || "Sms kodi xato");
+            }
+        } catch (error) {
+            setSmsLimitError("Tarmoq xatosi!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        if (!canResend) return;
+        if (!validatePhone(phone)) {
+            setErrors(prev => ({ ...prev, phone: "To'liq telefon raqam kiriting!" }));
+            return;
+        }
+
+        // Telefon raqamni tozalash
+        const cleanedPhone = phone.replace(/\D/g, '');
+
+        // Formatni tekshirish (998XXXXXXXXX)
+        if (!/^998\d{9}$/.test(cleanedPhone)) {
+            setErrors(prev => ({ ...prev, phone: "Iltimos, to'g'ri telefon raqamni kiriting!" }));
+            return;
+        }
+        setLoading(true);
+        setSmsLimitError(""); // Xatoliklarni tozalash
+        try {
+            const res = await fetch(`/site/send-sms/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone: cleanedPhone }),
+            });
+
+            const data = await res.json(); // Javobni JSON formatida olish
+
+            if (res.ok) {
+                setStep(2);
+                setCountdown(180);
+                setCanResend(false);
+            } else {
+                // Agar API dan xato kelsa
+                setSmsLimitError(data.error || "Sms kodi xato");
+            }
+        } catch (error) {
+            setSmsLimitError("Tarmoq xatosi!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const verifyCode = async () => {
+        setLoading(true);
+        setSmsErr("");
+
+        try {
+            const res = await fetch('/site/verify-sms', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    phone: phone.replace(/\D/g, ''), // Faqat raqamlarni yuborish
+                    code: code.join("")
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Tasdiqlash muvaffaqiyatsiz");
+            }
+
+            // Agar muvaffaqiyatli bo'lsa
+            setStep(3);
+
+            // Token ni saqlash (agar kerak bo'lsa)
+            if (data.token) {
+                localStorage.setItem('authToken', data.token);
+            }
+
+        } catch (error) {
+            setSmsErr(error.message || "Tasdiqlashda xatolik yuz berdi");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleInputChange = (e, index) => {
+        const value = e.target.value;
+        if (/^[0-9]$/.test(value) || value === "") {
+            const newCode = [...code];
+            newCode[index] = value;
+            setCode(newCode);
+            if (value && index < 3) {
+                inputRefs.current[index + 1].focus();
+            }
+        }
+    };
+
+    const handleKeyDown = (e, index) => {
+        if (e.key === "Backspace" && !code[index] && index > 0) {
+            inputRefs.current[index - 1].focus();
+        }
+    };
 
     const inputRef = useMask({
         mask: '+998 (__) ___-__-__',
+        replacement: { _: /\d/ },
+        showMask: true,
+        separate: true,
+    });
+
+    const inputRefAge = useMask({
+        mask: 'MM.DD.YYYY',
         replacement: { _: /\d/ },
         showMask: true,
         separate: true,
@@ -47,136 +388,21 @@ const Layout = () => {
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+    const handlePhoneChange = (e) => {
+        const value = e.target.value;
+        setPhone(value);
 
-        if (name === 'phone_number') {
-            validatePhoneNumber(value);
-        } else if (name === 'password') {
-            validatePassword(value);
-        } else if (name === 'confirm_password') {
-            validateConfirmPassword(value);
+        // Validate immediately
+        if (!validatePhone(value)) {
+            setErrors(prev => ({ ...prev, phone: "To'liq telefon raqam kiriting!" }));
+        } else {
+            setErrors(prev => ({ ...prev, phone: "" }));
         }
     };
 
-    const validatePhoneNumber = (phone) => {
-        const cleanedPhone = phone.replace(/\D/g, '').slice(-9);
-        if (cleanedPhone.length !== 9) {
-            setErrors(prev => ({ ...prev, phone_number: "Telefon raqami noto'g'ri formatda" }));
-            return false;
-        }
-        setErrors(prev => ({ ...prev, phone_number: '' }));
-        return true;
-    };
-
-    const validatePassword = (password) => {
-        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,32}$/;
-        if (!passwordRegex.test(password)) {
-            setErrors(prev => ({
-                ...prev,
-                password: "Parol kamida bitta raqam, bitta kichik harf, bitta bosh harf, hamda 6-32 oraliqdagi uzunlikda bo'lishi kerak"
-            }));
-            return false;
-        }
-        setErrors(prev => ({ ...prev, password: '' }));
-
-        if (formData.confirm_password) {
-            validateConfirmPassword(formData.confirm_password);
-        }
-
-        return true;
-    };
-
-    const validateConfirmPassword = (confirmPassword) => {
-        if (confirmPassword !== formData.password) {
-            setErrors(prev => ({ ...prev, confirm_password: "Parollar mos kelmadi" }));
-            return false;
-        }
-        setErrors(prev => ({ ...prev, confirm_password: '' }));
-        return true;
-    };
-
-    const validateForm = () => {
-        let isValid = true;
-        const newErrors = { ...errors };
-
-        if (!formData.first_name.trim()) {
-            newErrors.first_name = "Ism kiritilishi shart";
-            isValid = false;
-        }
-        if (!formData.last_name.trim()) {
-            newErrors.last_name = "Familiya kiritilishi shart";
-            isValid = false;
-        }
-        if (!formData.username.trim()) {
-            newErrors.username = "Foydalanuvchi nomi kiritilishi shart";
-            isValid = false;
-        }
-
-        if (!validatePhoneNumber(formData.phone_number)) {
-            isValid = false;
-        }
-
-        if (!validatePassword(formData.password)) {
-            isValid = false;
-        }
-
-        if (!validateConfirmPassword(formData.confirm_password)) {
-            isValid = false;
-        }
-
-        setErrors(newErrors);
-        return isValid;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
-
-        setLoading(true);
-        setErrors({});
-
-        try {
-            const response = await fetch('/site/user/register/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    first_name: formData.first_name,
-                    last_name: formData.last_name,
-                    username: formData.username,
-                    phone_number: formData.phone_number,
-                    password: formData.password,
-                    action: 'signup'
-                })
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || 'Registration failed');
-            }
-
-            // Muvaffaqiyatli ro'yxatdan o'tish
-            alert("Ro'yxatdan muvaffaqiyatli o'tdingiz!");
-            setRegisterStat(false);
-
-        } catch (error) {
-            setErrors(prev => ({
-                ...prev,
-                form: error.message || 'Xatolik yuz berdi'
-            }));
-        } finally {
-            setLoading(false);
-        }
+    const validatePhone = (phoneNumber) => {
+        const cleaned = phoneNumber.replace(/\D/g, '');
+        return cleaned.length === 12; // +998 followed by 9 digits
     };
 
     const toggleAction = () => {
@@ -184,144 +410,264 @@ const Layout = () => {
         setRegisterStat(!registerStat)
         setErrors({ login: "", password: "" })
     };
+
     return (
         <>
             <div className={`register-shape ${registerStat ? "popped" : ""}`}></div>
-            <div className={`register-popup ${registerStat ? "popped" : ""}`}>
-                <div className="register-container">
+            <section className={`register-popup ${registerStat ? "popped" : ""}`}>
+                <div className={`register-container`}>
                     <div className="close" onClick={() => setRegisterStat(false)}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" viewBox="0 0 512 512">
                             <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M256 112v288M400 256H112" />
                         </svg>
                     </div>
-                    <div className="logo">
-                        TestIshla<span>.</span>
-                    </div>
-                    <h1>
-                        <span>Akkount</span> yaratish
+                    <h1 className="logo">TestIshla<span>.</span></h1>
+                    <h1 style={{ fontSize: "32px" }}>
+                        <span>Ro'yxatdan</span> o'ting
                     </h1>
-
                     <div className="register-type">
                         <div className="phone">
                             Telefon raqam
                         </div>
                     </div>
 
-                    {errors.form && <div className="error-message">{errors.form}</div>}
+                    {step === 1 && (
+                        <div className={`steps form`}>
+                            <div className="input-row">
+                                <input
+                                    ref={inputRef}
+                                    type="tel"
+                                    value={phone}
+                                    onChange={handlePhoneChange}
+                                    onFocus={handleFocus}
+                                    className="phone-input"
+                                    placeholder='+998 (__) ___-__-__'
+                                />
+                                {errors.phone && <span className="error-text">{errors.phone}</span>}
+                            </div>
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="input-row">
-                            <input
-                                type="text"
-                                name="first_name"
-                                placeholder='Ism'
-                                value={formData.first_name}
-                                onChange={handleChange}
-                            />
-                            {errors.first_name && <span className="error-text">{errors.first_name}</span>}
-                        </div>
-                        <div className="input-row">
-                            <input
-                                type="text"
-                                name="last_name"
-                                placeholder='Familiya'
-                                value={formData.last_name}
-                                onChange={handleChange}
-                            />
-                            {errors.last_name && <span className="error-text">{errors.last_name}</span>}
-                        </div>
+                            {smsLimitError && <p className={`sms-limit-error `}>{smsLimitError}</p>}
 
-                        <div className="input-row">
-                            <input
-                                type="text"
-                                name="username"
-                                placeholder='Foydalanuvchi nomi'
-                                value={formData.username}
-                                onChange={handleChange}
-                            />
-                            {errors.username && <span className="error-text">{errors.username}</span>}
+                            <div className="toggle-action">
+                                <button type="button" onClick={toggleAction}>
+                                    {formData.action === 'signup'
+                                        ? <>
+                                            Allaqachon akkauntingiz bormi? <span>Kirish</span>
+                                        </>
+                                        : <>
+                                            Akkountingiz yo'qmi? <span>Ro'yxatdan o'tish</span>
+                                        </>}
+                                </button>
+                            </div>
+                            <div className={`input-row`}>
+                                <button
+                                    className="n"
+                                    disabled={loading}
+                                    onClick={sendSMS}
+                                >
+                                    {loading ? "Kod yuborilmoqda..." : "Kod yuborish"}
+                                </button>
+                            </div>
                         </div>
+                    )}
 
-                        <div className="input-row">
-                            <input
-                                ref={inputRef}
-                                type="tel"
-                                name="phone_number"
-                                placeholder='+998 (__) ___-__-__'
-                                value={formData.phone_number}
-                                onChange={handleChange}
-                                onFocus={handleFocus}
-                                className="phone-input"
-                            />
-                            {errors.phone_number && <span className="error-text">{errors.phone_number}</span>}
-                        </div>
+                    {step === 2 && (
+                        <div className={`steps form`}>
+                            <h2 style={{ margin: "10px 0", textAlign: "center" }}>Kodni tasdiqlash</h2>
+                            <div className={`code-field `}>
+                                {code.map((digit, index) => (
+                                    <input
+                                        key={index}
+                                        type="text"
+                                        maxLength="1"
+                                        value={digit}
+                                        placeholder="*"
+                                        onChange={(e) => handleInputChange(e, index)}
+                                        onKeyDown={(e) => handleKeyDown(e, index)}
+                                        ref={(el) => (inputRefs.current[index] = el)}
+                                    />
+                                ))}
+                            </div>
 
-                        <div className="input-row">
-                            <input
-                                type={show.password ? "password" : "text"}
-                                name="password"
-                                placeholder="Parol"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-                            <button type='button' onClick={() => setShow({ ...show, password: !show.password })}>
-                                {show.password ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" viewBox="0 0 512 512">
-                                        <path d="M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" />
-                                        <circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="32" />
-                                    </svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" viewBox="0 0 512 512">
-                                        <path d="M432 448a15.92 15.92 0 01-11.31-4.69l-352-352a16 16 0 0122.62-22.62l352 352A16 16 0 01432 448zM255.66 384c-41.49 0-81.5-12.28-118.92-36.5-34.07-22-64.74-53.51-88.7-91v-.08c19.94-28.57 41.78-52.73 65.24-72.21a2 2 0 00.14-2.94L93.5 161.38a2 2 0 00-2.71-.12c-24.92 21-48.05 46.76-69.08 76.92a31.92 31.92 0 00-.64 35.54c26.41 41.33 60.4 76.14 98.28 100.65C162 402 207.9 416 255.66 416a239.13 239.13 0 0075.8-12.58 2 2 0 00.77-3.31l-21.58-21.58a4 4 0 00-3.83-1 204.8 204.8 0 01-51.16 6.47zM490.84 238.6c-26.46-40.92-60.79-75.68-99.27-100.53C349 110.55 302 96 255.66 96a227.34 227.34 0 00-74.89 12.83 2 2 0 00-.75 3.31l21.55 21.55a4 4 0 003.88 1 192.82 192.82 0 0150.21-6.69c40.69 0 80.58 12.43 118.55 37 34.71 22.4 65.74 53.88 89.76 91a.13.13 0 010 .16 310.72 310.72 0 01-64.12 72.73 2 2 0 00-.15 2.95l19.9 19.89a2 2 0 002.7.13 343.49 343.49 0 0068.64-78.48 32.2 32.2 0 00-.1-34.78z" />
-                                        <path d="M256 160a95.88 95.88 0 00-21.37 2.4 2 2 0 00-1 3.38l112.59 112.56a2 2 0 003.38-1A96 96 0 00256 160zM165.78 233.66a2 2 0 00-3.38 1 96 96 0 00115 115 2 2 0 001-3.38z" />
-                                    </svg>
+                            {smsErr && <p className="error-text" >{smsErr}</p>}
+                            {/* Yangilangan resend section */}
+                            <div className={`resend-section `}>
+                                <p className={`countdown-text`}>
+                                    {countdown > 0
+                                        ? `Qayta kod yuborish uchun ${formatTime(countdown)} d`
+                                        : ""}
+                                </p>
+
+                                {countdown === 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={handleResendCode}
+                                        disabled={loading}
+                                        className={`resend-btn n`}
+                                    >
+                                        Kodni qayta yuborish
+                                    </button>
                                 )}
-                            </button>
-                            {errors.password && <span className="error-text">{errors.password}</span>}
-                        </div>
+                            </div>
 
-                        <div className="input-row">
-                            <input
-                                type={show.confirm_password ? "password" : "text"}
-                                name="confirm_password"
-                                placeholder="Parolni takrorlang"
-                                value={formData.confirm_password}
-                                onChange={handleChange}
-                            />
-                            <button type='button' onClick={() => setShow({ ...show, confirm_password: !show.confirm_password })}>
-                                {show.confirm_password ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" viewBox="0 0 512 512">
-                                        <path d="M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" />
-                                        <circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="32" />
-                                    </svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" viewBox="0 0 512 512">
-                                        <path d="M432 448a15.92 15.92 0 01-11.31-4.69l-352-352a16 16 0 0122.62-22.62l352 352A16 16 0 01432 448zM255.66 384c-41.49 0-81.5-12.28-118.92-36.5-34.07-22-64.74-53.51-88.7-91v-.08c19.94-28.57 41.78-52.73 65.24-72.21a2 2 0 00.14-2.94L93.5 161.38a2 2 0 00-2.71-.12c-24.92 21-48.05 46.76-69.08 76.92a31.92 31.92 0 00-.64 35.54c26.41 41.33 60.4 76.14 98.28 100.65C162 402 207.9 416 255.66 416a239.13 239.13 0 0075.8-12.58 2 2 0 00.77-3.31l-21.58-21.58a4 4 0 00-3.83-1 204.8 204.8 0 01-51.16 6.47zM490.84 238.6c-26.46-40.92-60.79-75.68-99.27-100.53C349 110.55 302 96 255.66 96a227.34 227.34 0 00-74.89 12.83 2 2 0 00-.75 3.31l21.55 21.55a4 4 0 003.88 1 192.82 192.82 0 0150.21-6.69c40.69 0 80.58 12.43 118.55 37 34.71 22.4 65.74 53.88 89.76 91a.13.13 0 010 .16 310.72 310.72 0 01-64.12 72.73 2 2 0 00-.15 2.95l19.9 19.89a2 2 0 002.7.13 343.49 343.49 0 0068.64-78.48 32.2 32.2 0 00-.1-34.78z" />
-                                        <path d="M256 160a95.88 95.88 0 00-21.37 2.4 2 2 0 00-1 3.38l112.59 112.56a2 2 0 003.38-1A96 96 0 00256 160zM165.78 233.66a2 2 0 00-3.38 1 96 96 0 00115 115 2 2 0 001-3.38z" />
-                                    </svg>
-                                )}
-                            </button>
-                            {errors.confirm_password && <span className="error-text">{errors.confirm_password}</span>}
+                            <div className={`input-row`} style={{ flexDirection: "row" }}>
+                                <button className="n" type="button" id="back" onClick={() => setStep(1)} >
+                                    Ortga
+                                </button>
+                                <button
+                                    className="n"
+                                    disabled={loading}
+                                    onClick={verifyCode}
+                                >
+                                    {loading ? "Tasdiqlanmoqda..." : "Tasdiqlash"}
+                                </button>
+                            </div>
                         </div>
+                    )}
 
-                        <div className="toggle-action">
-                            <button type="button" onClick={toggleAction}>
-                                {formData.action === 'signup'
-                                    ? <>Allaqachon akkauntingiz bormi? <span>Kirish</span></>
-                                    : <>Akkountingiz yo'qmi? <span>Ro'yxatdan o'tish</span></>}
-                            </button>
-                        </div>
+                    {step === 3 && (
+                        <form onSubmit={handleSubmit} className="last-form">
+                            <div className={`content form last`}>
+                                <div className={`input-row ${errors.name ? "err-border" : ""}`}>
+                                    <input
+                                        type="text"
+                                        placeholder="Ism kiriting"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.name && <span className={`error `}>{errors.name}</span>}
+                                </div>
+                                <div className={`input-row ${errors.surname ? "err-border" : ""} `}>
+                                    <input
+                                        type="text"
+                                        placeholder="Familiya kiriting"
+                                        name="surname"
+                                        value={formData.surname}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.surname && <span className={`error `}>{errors.surname}</span>}
+                                </div>
+                                <div className={`input-row ${errors.username ? "err-border" : ""}`}>
+                                    <input
+                                        type="text"
+                                        placeholder="Foydalanuvchi nomini kiriting"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.username && <span className={`error`}>{errors.username}</span>}
+                                </div>
+                                {/* <div className={`input-row ${errors.age ? "err-border" : ""}`}>
+                                <InputMask
+                                    mask="99.99.9999"
+                                    placeholder="DD.MM.YYYY"
+                                    name="age"
+                                    value={formData.age}
+                                    onChange={handleChange}
+                                >
+                                    {(inputProps) => <input {...inputProps} type="text" />}
+                                </InputMask>
+                                {errors.age && <span className={`error `}>{errors.age}</span>}
+                            </div> */}
+                                <div className={`input-row ${errors.age ? "err-border" : ""}`}>
+                                    <input
+                                        type="text"
+                                        placeholder="DD.MM.YYYY"
+                                        name="age"
+                                        value={formData.age}
+                                        onChange={handleChange}
+                                        maxLength={10}
+                                    />
+                                    {errors.age && <span className="error-text">{errors.age}</span>}
+                                </div>
+                                <div className={`input-row `}>
+                                    <input
+                                        type="email"
+                                        placeholder="Email kiriting"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div className={`input-row `}>
+                                    <select
+                                        id="gender"
+                                        name="gender"
+                                        value={formData.gender}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="male" >Erkak</option>
+                                        <option value="female" >Ayol</option>
+                                    </select>
+                                </div>
+                                <div className={`input-row ${errors.region ? "err-border" : ""} `}>
+                                    <select
+                                        id="regionSelect"
+                                        value={selectedRegion}
+                                        onChange={handleRegionChange}
+                                    >
+                                        <option value="" disabled >
+                                            Viloyat tanlang
+                                        </option>
+                                        {regions.map((region) => (
+                                            <option key={region.id} value={region.id} >
+                                                {region.name_uz.replace(/�/g, "'")}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.region && <span className={`error `}>{errors.region}</span>}
+                                </div>
+                                <div className={`input-row ${errors.district ? "err-border" : ""} `}>
+                                    <select
+                                        id="districtSelect"
+                                        value={selectedDistrict}
+                                        onChange={handleDistrictChange}
+                                    >
+                                        <option value="" disabled >
+                                            Tuman tanlang
+                                        </option>
+                                        {districts.map((district) => (
+                                            <option key={district.id} value={district.name_uz} >
+                                                {district.name_uz.replace(/�/g, "'")}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.district && <span className={`error`}>{errors.district}</span>}
+                                </div>
+                                <div className={`input-row ${errors.password ? "err-border" : ""} `}>
+                                    <input
+                                        type="password"
+                                        placeholder="Parol kiriting"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.password && <span className={`error `}>{errors.password}</span>}
+                                </div>
+                                <div className={`input-row ${errors.confirmPassword ? "err-border" : ""} `}>
+                                    <input
+                                        type="password"
+                                        placeholder="Parolni takrorlang"
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.confirmPassword && (
+                                        <span className={`error`}>{errors.confirmPassword}</span>
+                                    )}
+                                </div>
+                            </div>
 
-                        <div className="input-row">
-                            <button type="submit" disabled={loading}>
-                                {loading ? 'Yuklanmoqda...' : "Ro'yxatdan o'tish"}
+                            <button type="submit" className="n" disabled={loading}>
+                                {loading ? "Yuborilmoqda..." : "Yuborish"}
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    )}
                 </div>
-            </div>
+            </section>
         </>
-    )
-}
+    );
+};
 
-export default Layout;
+export default Signup;

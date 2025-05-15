@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 
-const Header = ({ timeLeft, setTimeLeft, testStatus, currentTest, currentQuestionIndex, questions, toggleZoom, handleTimeout }) => {
+const Header = ({ timeLeft, setTimeLeft, testStatus, currentTest, currentQuestionIndex, questions, toggleZoom, handleTimeout, finishTest }) => {
+
+    const [aggModal, setAggModal] = useState(false);
 
     // Format time
     const formatTime = (seconds) => {
@@ -26,12 +28,15 @@ const Header = ({ timeLeft, setTimeLeft, testStatus, currentTest, currentQuestio
             handleTimeout();
         }
     }, [timeLeft, testStatus]);
+    
+
     return (
         <>
             {/* Test header */}
             <div className="test-header">
                 <h2>{currentTest.testTitle}</h2>
                 <div className="test-info">
+
                     <div className="timer">Qolgan vaqt: {formatTime(timeLeft)}</div>
                     <div className="progress">
                         Savol {currentQuestionIndex + 1} / {questions.length}
@@ -44,6 +49,18 @@ const Header = ({ timeLeft, setTimeLeft, testStatus, currentTest, currentQuestio
                                 <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z" />
                             </svg>
                         </button>
+                    </div>
+                    <div className="end-test" onClick={() => setAggModal(true)}>
+                        Testni yakunlash
+                    </div>
+                </div>
+            </div>
+            <div className={`agg-modal ${aggModal ? "act" : ""}`}>
+                <div className="agg-content">
+                    <h2>Haqiqatdan ham testni yakunlamoqchimisiz?</h2>
+                    <div className="agg-actions">
+                        <button className="no" onClick={() => setAggModal(false)}>Yo'q</button>
+                        <button className="yes" onClick={finishTest}>Ha</button>
                     </div>
                 </div>
             </div>

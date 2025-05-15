@@ -19,7 +19,7 @@ export async function POST(request) {
         });
       }
   
-      const response = await fetch(`${API_BASE}/user/auth/`, {
+      const response = await fetch(`${API_BASE}/api/signup/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

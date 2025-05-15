@@ -1,0 +1,129 @@
+#complated {
+    h2 {
+        font-size: 20px;
+        font-weight: 500;
+        color: #333;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    .complated-tests-container {
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+
+        .complated-tests-contents {
+            display: flex;
+            justify-content: space-between;
+            background-color: #fbfbf9;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #d0cece;
+            border-bottom-width: 2px;
+
+            div {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                border-radius: 7px;
+                background-image: linear-gradient(to right bottom, #e6f0ee, #e6f0ee, #fff);
+                svg path{
+                    fill: #52ad68
+                }
+            }
+
+            .test-title {
+                max-width: 239px;
+                width: 100%;
+                p {
+                    &:first-child {
+                        font-size: 14px;
+                        font-weight: 500;
+                    }
+
+                    &:last-child {
+                        font-size: 12px;
+                        font-weight: 500;
+                    }
+                }
+            }
+
+            .test-count {
+                p {
+                    &:first-child {
+                        font-size: 14px;
+                        font-weight: 500;
+                    }
+                    &:last-child {
+                        font-size: 13px;
+                        font-weight: 500;
+                    }
+
+                    span {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        gap: 7px;
+
+        button {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #51ac66;
+            font-size: 15px;
+            cursor: pointer;
+            border-radius: 7px;
+            background-color: transparent;
+
+            &.active {
+                background-color: #51ac66;
+                color: #fff;
+            }
+        }
+    }
+}
+
+
+@media screen and (max-width: 500px) {
+    #complated {
+        .complated-tests-container {
+            .complated-tests-contents {
+                flex-wrap: wrap;
+                row-gap: 10px;
+                padding: 13px 20px;
+                .test-title {
+                    max-width: unset;
+                    width: 80%;
+                }
+                // .mob-dn {
+                //     display: none;
+                // }
+                .test-count {
+                    flex-direction: column-reverse;
+
+                    p {
+                        span {
+                            display: unset;
+                        }
+                    }
+                }
+            }
+        }       
+    }
+}

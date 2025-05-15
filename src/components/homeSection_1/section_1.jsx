@@ -14,7 +14,7 @@ const Section_1 = () => {
                 </h1>
 
                 <div className="cent">
-                <Link href="/tests/all">Natijalar</Link>
+                <Link href="/tests/all">Hoziroq boshlang!</Link>
                 </div>
             </div>
         </div>

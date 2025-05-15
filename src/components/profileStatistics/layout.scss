@@ -1,0 +1,141 @@
+.profile-statistics {
+  // padding: 20px;
+
+  h2 {
+    font-weight: 600;
+  }
+
+  .line-chart {
+    margin-bottom: 30px;
+    border: 1px solid #9d9d9d;
+    padding: 25px 15px;
+    border-radius: 10px;
+
+    canvas {
+      height: 371px !important;
+    }
+  }
+
+  .filters {
+    margin: 5px 0;
+    display: flex;
+    gap: 10px;
+
+    select {
+      width: 100%;
+      padding: 0 10px;
+      border-radius: 7px;
+      border: 2px solid #1ad07980;
+      background-color: transparent;
+      outline: 0;
+      cursor: pointer;
+      font-size: 16px;
+      padding-right: 20px;
+      height: 40px;
+
+      option {
+        &:hover {
+          background-color: unset;
+        }
+      }
+    }
+  }
+
+  .month-filter {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 5px 0;
+
+    select {
+      width: 30%;
+      padding: 0 10px;
+      border-radius: 7px;
+      border: 2px solid #1ad07980;
+      background-color: transparent;
+      outline: 0;
+      cursor: pointer;
+      font-size: 16px;
+      padding-right: 20px;
+      height: 40px;
+
+      option {
+        background-color: #000000b2;
+      }
+    }
+  }
+
+  .calendar-heatmap {
+    border: 1px solid #9d9d9d;
+    margin: 5px 0;
+    margin-top: 20px;
+    padding: 25px 15px;
+    border-radius: 10px;
+
+    [data-tooltip] {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .year-filter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 0 0 30px;
+    }
+
+    select {
+      width: 30%;
+      padding: 0 10px;
+      border-radius: 7px;
+      border: 2px solid #1ad07980;
+      background-color: transparent;
+      outline: 0;
+      cursor: pointer;
+      font-size: 16px;
+      padding-right: 20px;
+      height: 40px;
+
+      option {
+        background-color: #000000b2;
+      }
+    }
+
+    .color-empty {
+      fill: #ebedf0;
+    }
+
+    .color-scale-1 {
+      fill: #c6e48b;
+    }
+
+    .color-scale-2 {
+      fill: #7bc96f;
+    }
+
+    .color-scale-3 {
+      fill: #239a3b;
+    }
+
+    .color-scale-4 {
+      fill: #196127;
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .profile-statistics {
+    .line-chart {
+      padding: 10px 0;
+      height: 430px;
+    }
+    .for-width {
+      max-width: 500px;
+      overflow: auto;
+
+      .calendar-heatmap {
+        width: 800px;
+      }
+    }
+  }
+}

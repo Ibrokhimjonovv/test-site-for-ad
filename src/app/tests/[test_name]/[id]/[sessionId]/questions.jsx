@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
+import parse from "html-react-parser";
 
-const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selectedOption, questions, setSelectedOption, sessionManager, sessionId, setScore, setCurrentQuestionIndex, setTestStatus, isZoomed, handleOptionSelect }) => {
+const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selectedOption, questions, setSelectedOption, sessionManager, sessionId, setScore, setCurrentQuestionIndex, setTestStatus, isZoomed, handleOptionSelect, finishTest }) => {
     const [zoomLevel, setZoomLevel] = useState(1);
 
     const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -178,36 +179,159 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
         }
     };
 
+    
 
-
-    // Test completion
-    const finishTest = () => {
-        let finalScore = 0;
-        const session = sessionManager.getSession(sessionId);
-
-        Object.entries(session.answers || {}).forEach(([index, answer]) => {
-            if (questions[index]?.correctAnswer === answer) {
-                finalScore++;
-            }
-        });
-
-        if (selectedOption === questions[currentQuestionIndex]?.correctAnswer) {
-            finalScore++;
-        }
-
-        sessionManager.updateSession(sessionId, {
-            status: 'completed',
-            endTime: new Date().toISOString(),
-            isValid: false,
-            score: finalScore,
-            totalQuestions: questions.length
-        });
-
-        setScore(finalScore);
-        setTestStatus('completed');
+    const fixBrokenImageTags = (text) => {
+        return text.replace(
+            /alt=["']?Question Image["']?\s*style=["'][^"']*["']?\s*\/?>/g,
+            ""
+        );
     };
 
     // Timeout handler
+
+    const renderQuestionText = (text) => {
+        if (typeof text !== "string") return "";
+
+        const baseUrl = "https://edumark.uz";
+
+        // <img> teglarini vaqtincha saqlash uchun joy
+        const imgPlaceholders = [];
+        let imgIndex = 0;
+
+        // <img> teglarini vaqtincha almashtirish
+        text = text.replace(/<img\s+[^>]*>/g, (match) => {
+            imgPlaceholders.push(match); // Tegni saqlash
+            return `@@IMG${imgIndex++}@@`; // Tegni vaqtincha almashtirish
+        });
+
+        // Matematik formulalarni aniqlash va to'g'ri ko'rsatish
+        const mathRegex =
+            /\\frac\{.*?\}\{.*?\}|\\sum|\\sqrt|\\left|\\right|\\times|\\div|a\d|⍟/g;
+        text = text.replace(mathRegex, (match) => {
+            try {
+                // a2, a3 kabi ifodalarni a^2, a^3 ga o'zgartirish
+                if (match.startsWith("a")) {
+                    return katex.renderToString(match.replace("a", "a^"), {
+                        throwOnError: false,
+                    });
+                }
+                // ⍟ belgisini KaTeXda to'g'ri ko'rsatish
+                // if (match === '⍟') {
+                //   return katex.renderToString('\\star', { throwOnError: false });
+                // }
+                return katex.renderToString(match, { throwOnError: false });
+            } catch (error) {
+                console.error("KaTeX render error:", error);
+                return match;
+            }
+        });
+
+        // <img> teglarini qayta joylashtirish
+        text = text.replace(/@@IMG(\d+)@@/g, (match, index) => {
+            const imgTag = imgPlaceholders[Number(index)]; // Tegni olish
+            // Rasm manzilini to'g'rilash
+            return imgTag.replace(
+                /<img\s+src=["'](\/media[^"']+)["']/g,
+                (match, path) => `<img src="${baseUrl}${path}" />`
+            );
+        });
+
+        // Noto'g'ri img taglarini to'g'rilash
+        text = fixBrokenImageTags(text);
+
+        return text;
+    };
+
+    const cleanText = (text) => {
+        if (typeof text !== "string") return "";
+
+        // Matematik formulalarni aniqlash
+        const mathRegex = /\$[^$]*\$|\\\([^\)]*\\\)|\\\[[^\]]*\\\]/g;
+        let formulas = [];
+        let index = 0;
+
+        // Formulalarni vaqtincha almashtirish
+        text = text.replace(mathRegex, (match) => {
+            formulas.push(match);
+            return `__FORMULA_${index++}__`;
+        });
+
+        // Formulalarni qayta joylashtirish
+        formulas.forEach((formula, i) => {
+            text = text.replace(`__FORMULA_${i}__`, formula);
+        });
+
+        return text;
+    };
+    const fixImageTags = (text) => {
+        return text.replace(/<img([^>]+)>/g, (match, attributes) => {
+            // 'alt' va 'style' atributlarini olib tashlash
+            attributes = attributes.replace(/\s*alt=["'][^"']*["']/g, "");
+            attributes = attributes.replace(/\s*style=["'][^"']*["']/g, "");
+            return `<img ${attributes} />`;
+        });
+    };
+    const fixImageUrl = (text) => {
+        if (typeof text !== "string") return "";
+        const baseUrl = "https://edumark.uz";
+        return text.replace(
+            /<img\s+([^>]*?)src=["'](\/media[^"']+)["']([^>]*)>/g,
+            (match, before, path, after) => {
+                // `alt="QuestionImage"` va `style="..."` atributlarini olib tashlash
+                const cleanedBefore = before
+                    .replace(/\balt=["'][^"']*["']/g, "") // alt atributini olib tashlash
+                    .replace(/\bstyle=["'][^"']*["']/g, "") // style atributini olib tashlash
+                    .trim(); // Bo‘sh joylarni tozalash
+
+                return `<img ${cleanedBefore} src="${baseUrl}${path}" ${after}>`;
+            }
+        );
+    };
+
+    const renderMath = (text) => {
+        if (typeof text !== "string") return "";
+
+        // <img> teglarini vaqtincha saqlash uchun joy
+        const imgPlaceholders = [];
+        let imgIndex = 0;
+
+        // <img> teglarini vaqtincha almashtirish
+        text = text.replace(/<img\s+[^>]*>/g, (match) => {
+            imgPlaceholders.push(match); // Tegni saqlash
+            return `@@IMG${imgIndex++}@@`; // Tegni vaqtincha almashtirish
+        });
+
+        // Matematik formulalarni aniqlash
+        const mathRegex =
+            /\\frac\{.*?\}\{.*?\}|\\sum|\\sqrt|\\left|\\right|\\times|\\div|a\d|⍟/g;
+
+        // Formulalarni ajratib, ularni KaTeX orqali ko'rsatish
+        text = text.replace(mathRegex, (match) => {
+            try {
+                // a2, a3 kabi ifodalarni a^2, a^3 ga o'zgartirish
+                if (match.startsWith('a')) {
+                    return katex.renderToString(match.replace('a', 'a^'), { throwOnError: false });
+                }
+                // ⍟ belgisini KaTeXda to'g'ri ko'rsatish
+                if (match === '⍟') {
+                    return katex.renderToString('\\star', { throwOnError: false });
+                }
+                // Boshqa matematik formulalarni render qilish
+                return katex.renderToString(match, { throwOnError: false });
+            } catch (error) {
+                console.error("KaTeX render error:", error);
+                return match;
+            }
+        });
+
+        // <img> teglarini qayta joylashtirish
+        text = text.replace(/@@IMG(\d+)@@/g, (match, index) => {
+            return imgPlaceholders[Number(index)]; // Tegni qaytarish
+        });
+
+        return text;
+    };
 
     return (
         <>
@@ -253,19 +377,23 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
             {/* Question container */}
             <div className="question-container">
                 <h3 className="question-text" onClick={toggleZoom}>
-                    {currentQuestion.question}
+                    {parse(renderQuestionText(currentQuestion.text))}
                 </h3>
 
                 <div className="options-container">
                     {currentQuestion.options.map((option, index) => (
                         <div
-                            key={index}
-                            className={`option ${selectedOption === index ? 'selected' : ''}`}
-                            onClick={() => handleOptionSelect(index)}
-                        >
-                            <span className="option-letter">{String.fromCharCode(65 + index)}.</span>
-                            {option}
-                        </div>
+                            key={option.id}
+                            className={`option ${selectedOption === option.id ? 'selected' : ''}`}
+                            onClick={() => handleOptionSelect(option.id)}
+                            dangerouslySetInnerHTML={{
+                                __html: `<strong class="chart">${String.fromCharCode(
+                                    65 + index
+                                )}) </strong> ${fixImageTags(
+                                    fixImageUrl(renderMath(cleanText(option.text)))
+                                )}`,
+                            }}
+                        />
                     ))}
                 </div>
 

@@ -4,13 +4,13 @@ export async function POST(request) {
     const body = await request.json();
     
     // Validation
-    if (!body.login || !body.password) {
+    if (!body.username || !body.password) {
       return Response.json({ error: 'Login va parol kiritilishi shart' }, {
         status: 400
       });
     }
 
-    const response = await fetch(`${API_BASE}/user/auth/`, {
+    const response = await fetch(`${API_BASE}/api/login/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

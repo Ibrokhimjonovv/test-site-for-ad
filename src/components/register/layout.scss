@@ -44,8 +44,9 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    // height: 100%;
+    min-height: 100%;
     position: relative;
+    // overflow: auto;
 
     .close {
       width: 40px;
@@ -57,6 +58,9 @@
       right: 15px;
       top: 15px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .logo {
@@ -96,13 +100,68 @@
       }
     }
 
-    form {
+    .last-form {
+      width: 500px;
+
+      .last {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .input-row {
+        width: 48%;
+      }
+    }
+
+    .form {
       width: 50%;
+
+      &.last {
+        width: 100%;
+      }
+
+      .code-field {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+
+        input {
+          width: 50px;
+          text-align: center;
+          border: 2px solid #d7d8d4;
+          border-radius: 15px;
+          height: 50px;
+          font-size: 16px;
+          font-family: "Poppins";
+        }
+      }
+
+      .error-text {
+        margin-top: 5px;
+      }
+
+      .resend-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 10px;
+
+        button {
+          float: unset;
+          margin-top: 0;
+        }
+      }
+
       .input-row {
         margin-top: 20px;
         position: relative;
+        gap: 10px;
+        display: flex;
+        // justify-content: center;
+        flex-direction: column;
 
-        input {
+        input, select {
           border: 2px solid #d7d8d4;
           border-radius: 15px;
           width: 100%;
@@ -113,47 +172,36 @@
           padding-right: 40px !important;
         }
 
-        button[type="button"] {
-          position: absolute;
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          background-color: transparent;
-          border: none;
-          cursor: pointer;
-          width: 30px;
-          height: 30px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          transition: all 0.2s;
-
-          &:hover {
-            background-color: #d7d8d4;
-          }
-
-          svg {
-            width: 20px !important;
-          }
+        .error-text {
+          color: red;
+          font-size: 15px;
         }
 
-        button[type="submit"] {
-          width: 100%;
-          height: 50px;
-          border-radius: 15px;
-          background-color: #ff8a00;
-          font-size: 16px;
-          border: none;
-          cursor: pointer;
-          font-family: "Poppins";
-          color: #fff;
-          transition: all 0.2s;
+        // button[type="button"] {
+        //   position: absolute;
+        //   right: 10px;
+        //   top: 50%;
+        //   transform: translateY(-50%);
+        //   background-color: transparent;
+        //   border: none;
+        //   cursor: pointer;
+        //   width: 30px;
+        //   height: 30px;
+        //   display: flex;
+        //   align-items: center;
+        //   justify-content: center;
+        //   border-radius: 50%;
+        //   transition: all 0.2s;
 
-          &:hover {
-            background-color: #cf7208;
-          }
-        }
+        //   &:hover {
+        //     background-color: #d7d8d4;
+        //   }
+
+        //   svg {
+        //     width: 20px !important;
+        //   }
+        // }
+
       }
       .toggle-action {
         button {
@@ -161,14 +209,33 @@
           border: none;
           font-size: 16px;
           font-family: "Poppins";
-
+          
           span {
             cursor: pointer;
             color: #ff8a00;
           }
         }
-
+        
         margin-top: 15px;
+      }
+    }
+    button[type="submit"],
+    .n {
+      width: 50%;
+      height: 50px;
+      border-radius: 15px;
+      background-color: #ff8a00;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      font-family: "Poppins";
+      color: #fff;
+      transition: all 0.2s;
+      margin-top: 20px;
+      float: right;
+
+      &:hover {
+        background-color: #cf7208;
       }
     }
   }

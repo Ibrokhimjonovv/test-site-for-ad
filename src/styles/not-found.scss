@@ -1,0 +1,23 @@
+.not-found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    h1 {
+        font-size: 70px;
+    }
+
+    p {
+        font-size: 21px;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+}

@@ -1,0 +1,114 @@
+#rating {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    .ichi {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 50%;
+
+        p {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            color: #000000B2;
+            font-weight: 600;
+
+            &:first-child {
+                position: relative;
+                top: 10px;
+            }
+
+            &:nth-child(2) {
+
+                span {
+                    font-size: 60px;
+                    font-weight: 600;
+                    position: relative;
+                    top: -30px;
+                }
+            }
+
+            &:last-child {
+                margin-top: -45px;
+            }
+
+            img {
+                width: 100px;
+            }
+        }
+    }
+
+    .ni {
+        width: 50%;
+        max-height: 195px;
+        overflow: auto;
+        margin-top: 10px;
+
+        #f-p {
+            text-align: center;
+            font-weight: 600;
+            color: #000000B2;
+        }
+
+        .results-cont {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            p {
+                font-weight: 600;
+                color: #000000B2;
+                padding: 5px 3px;
+                font-size: 20px;
+                margin-top: 10px;
+            }
+
+            button {
+                margin: 0 auto;
+                display: inline-block;
+                background-color: #52ad67;
+                border: none;
+                border-radius: 7px;
+                box-shadow: 0 0 7px #52ad67;
+                padding: 10px 15px;
+                cursor: pointer;
+                color: #fff;
+                font-size: 15px;
+                margin-top: 20px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #rating {
+        flex-direction: column-reverse;
+        row-gap: 20px;
+
+        .line {
+            height: 3px;
+            width: 90%;
+            background-image: linear-gradient(to left, #fff, #000, #fff);
+            margin: 0 auto;
+        }
+
+        .ichi, .ni {
+            width: 100%;
+            
+            .results-cont {
+                p {
+                    margin-top: 5px;
+                }
+
+                button {
+                    margin-top: 10px;
+                }
+            }
+        }
+    }   
+}

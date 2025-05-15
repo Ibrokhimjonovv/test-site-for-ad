@@ -1,0 +1,128 @@
+#profile-section {
+    
+
+    .profile-container {
+        #edit-profile-heading {
+            color: #000000B2;
+            font-size: 46px;
+            font-family: "Anek Odia", sans-serif;
+            text-align: center;
+            // background-color: #EBF3FF85;
+            margin-top: 7px;
+            margin-bottom: 20px;
+        }
+
+        .edit-profile-content {
+            padding: 0 50px;
+            display: flex;
+            justify-content: space-between;
+            background-color: #EBF3FF85;
+            max-width: 1000px;
+            margin: 0 auto;
+
+            .edit-content {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: space-between;
+    
+                .input-row {
+                    width: 48%;
+    
+                    &.err-border {
+                        input, select {
+                            border-color: red;
+                        }
+                    }
+    
+                    .error {
+                        color: red;
+                    }
+                    input {
+                        width: 100%;
+                        padding: 10px;
+                        border-radius: 7px;
+                        border: 2px solid #1AD07980;
+                        background-color: transparent;
+                        outline: 0;
+                        color: #000;
+                        font-size: 16px;
+                        height: 45px;
+    
+                        &::placeholder {
+                            color: #000;
+                        }
+                    }
+    
+                    select {
+                        width: 100%;
+                        padding: 0 10px;
+                        border-radius: 7px;
+                        border: 2px solid #1AD07980;
+                        background-color: transparent;
+                        outline: 0;
+                        color: #000;
+                        cursor: pointer;
+                        font-size: 16px;
+                        padding-right: 20px;
+                        height: 45px;
+    
+                        option {
+                            color: #fff;
+                            background-color: #000000b2;
+    
+                            &[disabled] {
+                                color: #FFFFFF66;
+                            }
+                        }
+                    }
+                }
+                
+            }
+
+            button {
+                background-color: #1AD079;
+                padding: 9px 40px 4px;
+                position: relative;
+                left: 50%;
+                transform: translateX(-50%);
+                margin-top: 20px;
+                border-radius: 8px;
+                border: 0;
+                cursor: pointer;
+                color: #fff;
+                font-size: 18px;
+                font-weight: 600;
+                box-shadow: 0 0 5px #1AD079,
+                    0 0 10px #1AD079;
+                font-family: "Anek Odia", sans-serif;
+    
+                &:hover {
+                    box-shadow: unset;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #profile-section {
+
+        .profile-container {
+
+            #edit-profile-heading {
+                font-size: 32px;
+            }
+    
+            .edit-profile-content {
+    
+                .edit-content {
+        
+                    .input-row {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+}

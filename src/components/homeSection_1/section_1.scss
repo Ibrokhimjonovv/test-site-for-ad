@@ -51,6 +51,11 @@
       padding: 15px 30px;
       background-color: #ff8a00;
       color: #fff;
+      transition: all .2s;
+
+      &:hover {
+        background-color: #e67f0b;
+      }
     }
   }
 }

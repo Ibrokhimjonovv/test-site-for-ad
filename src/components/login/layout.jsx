@@ -82,9 +82,9 @@ const Login = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    login: formData.login,
+                    username: formData.login,
                     password: formData.password,
-                    action: 'login'
+                    last_login: new Date().toISOString(),
                 })
             });
 
@@ -94,10 +94,12 @@ const Login = () => {
                 throw new Error(result.error || 'Kirish muvaffaqiyatsiz');
             }
 
-            localStorage.setItem('access', result.access);
-            localStorage.setItem('refresh', result.refresh);
+            localStorage.setItem('accessEdu', result.access);
+            localStorage.setItem('refreshEdu', result.refresh);
             setLoginStat(false);
             resteForm();
+            // setAccess(true);
+            window.location.reload()
 
         } catch (error) {
             setErrors(prev => ({
