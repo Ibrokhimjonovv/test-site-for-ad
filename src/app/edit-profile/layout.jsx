@@ -30,7 +30,14 @@ const Layout = () => {
         age: "",
     });
     const [success, setSuccess] = useState(false);
-    const token = localStorage.getItem("accessEdu");
+    const [token, setToken] = useState("");
+
+    useEffect(() => {
+        const access = localStorage.getItem("accessEdu");
+        if (access) {
+            setToken(access);
+        }
+    }, []);
 
     useEffect(() => {
         const fetchRegions = async () => {
