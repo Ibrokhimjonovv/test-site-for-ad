@@ -1,149 +1,149 @@
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  z-index: -1;
+// .modal {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   background: rgba(0, 0, 0, 0.5);
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   opacity: 0;
+//   z-index: -1;
 
-  &.active {
-    opacity: 1;
-    z-index: 9999999;
-  }
-}
+//   &.active {
+//     opacity: 1;
+//     z-index: 9999999;
+//   }
+// }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  width: 400px;
+// .modal-content {
+//   background: white;
+//   padding: 20px;
+//   border-radius: 10px;
+//   text-align: center;
+//   width: 400px;
 
-  h3 {
-    span {
-      color: #52ad67;
-    }
-  }
+//   h3 {
+//     span {
+//       color: #52ad67;
+//     }
+//   }
 
-  .payment-method {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0;
+//   .payment-method {
+//     display: flex;
+//     gap: 10px;
+//     justify-content: center;
+//     align-items: center;
+//     margin: 10px 0;
 
-    button {
-      width: 100px;
-      height: 45px;
-      margin: 0 !important;
-      cursor: pointer;
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      border: 2px solid #fff !important;
+//     button {
+//       width: 100px;
+//       height: 45px;
+//       margin: 0 !important;
+//       cursor: pointer;
+//       background-position: center;
+//       background-size: cover;
+//       background-repeat: no-repeat;
+//       border: 2px solid #fff !important;
 
-      &:hover,
-      &.active {
-        box-shadow: unset !important;
-        border-color: #00ff85 !important;
-      }
-    }
-  }
-  .top-up-modal {
-    display: flex;
-    flex-direction: column;
+//       &:hover,
+//       &.active {
+//         box-shadow: unset !important;
+//         border-color: #00ff85 !important;
+//       }
+//     }
+//   }
+//   .top-up-modal {
+//     display: flex;
+//     flex-direction: column;
 
-    input {
-      height: 45px;
-      width: 100%;
-      border-radius: 5px;
-      outline: none;
-      padding: 7px 45px 5px 7px;
-      border: 2px solid #52ad67;
-    }
+//     input {
+//       height: 45px;
+//       width: 100%;
+//       border-radius: 5px;
+//       outline: none;
+//       padding: 7px 45px 5px 7px;
+//       border: 2px solid #52ad67;
+//     }
     
-    #inp-w-s {
-      position: relative;
+//     #inp-w-s {
+//       position: relative;
 
-      span {
-          position: absolute;
-          right: 7px;
-          top: 50%;
-          transform: translateY(-50%);
-          background-color: #fff;
-      }
-    }
-    .modal-btn {
-      display: flex;
-      gap: 10px;
+//       span {
+//           position: absolute;
+//           right: 7px;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background-color: #fff;
+//       }
+//     }
+//     .modal-btn {
+//       display: flex;
+//       gap: 10px;
 
 
-      button {
-        width: 50%;
-        margin-top: 0 !important;
+//       button {
+//         width: 50%;
+//         margin-top: 0 !important;
 
-        &:last-child {
-          background-color: transparent !important;
-          color: #52ad67 !important;
-          box-shadow: unset !important;
-          border: 2px solid #52ad67 !important;
+//         &:last-child {
+//           background-color: transparent !important;
+//           color: #52ad67 !important;
+//           box-shadow: unset !important;
+//           border: 2px solid #52ad67 !important;
 
-          &:hover {
-            background-color: #52ad67 !important;
-            color: #fff !important;
-          }
-        }
+//           &:hover {
+//             background-color: #52ad67 !important;
+//             color: #fff !important;
+//           }
+//         }
 
-        &:first-child {
-          background-color: transparent !important;
-          color: red !important;
-          box-shadow: unset !important;
-          border: 2px solid red !important;
+//         &:first-child {
+//           background-color: transparent !important;
+//           color: red !important;
+//           box-shadow: unset !important;
+//           border: 2px solid red !important;
 
-          &:hover {
-            background-color: red !important;
-            color: #fff !important;
-          }
-        }
-      }
-    }
-  }
-}
+//           &:hover {
+//             background-color: red !important;
+//             color: #fff !important;
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
 
-@media screen and (min-width: 1550px) {
-  .modal-content {
-    width: 500px;
-    padding: 20px 0;
-    h3 {
-      font-size: 24px;
-    }
-    .payment-method {
-      button {
-        width: 50%;
-        height: 60px;
-      }
-    }
-    .top-up-modal {
-      input {
-        font-size: 17px;
-        height: 50px;
-      }
+// @media screen and (min-width: 1550px) {
+//   .modal-content {
+//     width: 500px;
+//     padding: 20px 0;
+//     h3 {
+//       font-size: 24px;
+//     }
+//     .payment-method {
+//       button {
+//         width: 50%;
+//         height: 60px;
+//       }
+//     }
+//     .top-up-modal {
+//       input {
+//         font-size: 17px;
+//         height: 50px;
+//       }
 
-      span {
-        font-size: 17px;
-      }
-    }
-  }
-}
+//       span {
+//         font-size: 17px;
+//       }
+//     }
+//   }
+// }
 
-@media screen and (max-width: 500px) {
-  .modal-content {
-    width: 95%;
-    margin: 0 auto;
-  }
-}
+// @media screen and (max-width: 500px) {
+//   .modal-content {
+//     width: 95%;
+//     margin: 0 auto;
+//   }
+// }

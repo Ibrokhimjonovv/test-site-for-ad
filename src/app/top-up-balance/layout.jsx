@@ -90,7 +90,7 @@ const BalanceTopUp = () => {
             payment_method: paymentMethod,
             customer: userId,
             order_id: orderId,
-            
+
           }),
         }
       );
@@ -116,11 +116,11 @@ const BalanceTopUp = () => {
   return (
     <div>
       <div className={`up-form`}>
-        <h2>Hisobni to'ldirish</h2>
+        <h2><span>Hisobni</span> to'ldirish</h2>
         <div className={`modal-content`}>
-          <h3>
+          {/* <h3>
             To'lov usulini tanlang: <span>{paymentMethod === "payme" ? "Payme" : "Click"}</span> orqali
-          </h3>
+          </h3> */}
           <div className={`payment-method`}>
             <button
               onClick={() => setPaymentMethod("payme")}
@@ -128,38 +128,57 @@ const BalanceTopUp = () => {
               style={{ backgroundImage: `url(${payme.src})` }}
               aria-label="Payme"
             ></button>
+            <button
+              onClick={() => setPaymentMethod("click")}
+              className={`${paymentMethod === "click" ? "active" : ""}`}
+              style={{ backgroundImage: `url(${click.src})` }}
+              aria-label="Click"
+            ></button>
           </div>
           <div className={`top-up-modal`}>
-            <div id="inp-w-s">
-              <input
-                type="text"
-                placeholder="Summani kiriting (so'm)"
-                name="total_cost"
-                value={formatAmount(amount)}
-                onChange={handleChange}
-               
-              />
-              <span>UZS</span>
-            </div>
-            {error && (
-              <p style={{
-                fontSize: "15px",
-                color: "red",
-                margin: "7px 0 0 0",
-                textAlign: "left",
-              }}>
-                {error}
-              </p>
-            )}
-            <div className={`modal-btn`}>
-              <button 
-                onClick={handlePayment} 
-                disabled={shaxLoading} 
-                className={`${shaxLoading ? "ac" : ""}`}
-              >
-                {shaxLoading ? "To'lov qilinmoqda..." : "To'lov qilish"}
-              </button>
-            </div>
+
+            {
+              paymentMethod === 'click' ? (
+                <div>Ayni paytda <span style={{ color: "#ff8a00" }}>click</span> orqali to‘lovni amalga oshirish imkoni mavjud emas. Noqulaylik uchun uzr so‘raymiz.</div>
+              ) : (
+                <>
+                  <p>
+                    <span className="st">{profileData.surname} {profileData.name}</span> ning balansini oshirish!
+                  </p>
+                  <p>Hozirgi balans: <span className="s">{profileData.balance}</span> so'm</p>
+                  <div id="inp-w-s">
+                    <input
+                      type="text"
+                      placeholder="Summani kiriting (so'm)"
+                      name="total_cost"
+                      value={formatAmount(amount)}
+                      onChange={handleChange}
+                      required
+                    />
+                    <span>UZS</span>
+                  </div>
+                  {error && (
+                    <p style={{
+                      fontSize: "15px",
+                      color: "red",
+                      margin: "3px 0 0 0",
+                      textAlign: "left",
+                    }}>
+                      {error}
+                    </p>
+                  )}
+                  <div className={`modal-btn`}>
+                    <button
+                      onClick={handlePayment}
+                      disabled={shaxLoading}
+                      className={`${shaxLoading ? "ac" : ""}`}
+                    >
+                      {shaxLoading ? "To'lov qilinmoqda..." : "To'lov qilish"}
+                    </button>
+                  </div>
+                </>
+              )
+            }
           </div>
         </div>
       </div>

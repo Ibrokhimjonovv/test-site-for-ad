@@ -149,8 +149,11 @@
 
             .right {
                 width: 35%;
-
+                position: relative;
+                
                 .user-profile {
+                    top: 20px;
+                    position: sticky;
                     background-color: #0b0e1e;
                     padding: 30px 20px 20px;
                     border-radius: 1rem;
@@ -376,6 +379,8 @@
                 }
 
                 .start-now {
+                    top: 280px;
+                    position: sticky;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;

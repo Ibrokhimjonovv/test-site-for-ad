@@ -105,7 +105,7 @@ const Profile = () => {
             <div className={`left-inner-1 mob-ver`}>
               <StaticLayout />
             </div>
-            <div className={`left-inner-2 mob-ver`}>
+            {/* <div className={`left-inner-2 mob-ver`}>
               <div className={`your-friend`}>
                 <h1 >Reyting</h1>
                 <div className={`your-friends`}>
@@ -123,7 +123,7 @@ const Profile = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className={`start-now mob-ver`}>
               <div className={`now-left`}>
                 Darajani oshirish
@@ -199,7 +199,7 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className={`left-inner-2`}>
+            {/* <div className={`left-inner-2`}>
               <div className={`your-friend`}>
                 <h1 >Reyting</h1>
                 <div className={`your-friends`}>
@@ -217,7 +217,7 @@ const Profile = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className={`start-now`}>
               <div className={`now-left`}>
                 Darajani oshirish

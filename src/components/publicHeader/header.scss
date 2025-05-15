@@ -1,6 +1,6 @@
 header {
   background-color: #fff;
-  box-shadow: 0 0 15px #CFCFCF47;
+  box-shadow: 0 0 15px #cfcfcf47;
   position: relative;
   z-index: 1;
   .header-inner {
@@ -32,45 +32,76 @@ header {
         gap: 15px;
 
         li {
-            a {
-                color: #000;
+          a {
+            color: #000;
+            position: relative;
+            transition: all 0.2s;
+
+            &:before {
+              transition: all 0.2s;
+              position: absolute;
+              content: "";
+              bottom: -1px;
+              left: 0;
+              width: 0;
+              height: 3px;
+              background-color: #ff8a00;
             }
+
+            &:hover,
+            &.act {
+              &:before {
+                width: 100%;
+              }
+            }
+          }
         }
       }
     }
 
     .login-btns {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+
+      .top-btn {
         display: flex;
         align-items: center;
-        gap: 15px;
+        justify-content: center;
+        gap: 5px;
 
-        .top-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 5px;
-
-          svg {
-            width: 20px;
-            height: 20px;
-          }
+        &.balance-act {
+          background-color: #ff8a00;
+          color: #fff;
         }
 
-        button, a {
-            color: #000;
-            background-color: #f8f9f4;
-            padding: 8px 17px;
-            border-radius: 15px;
-            border: none;
-            font-size: 16px;
-            font-family: "Poppins";
-            cursor: pointer;
-            transition: all .2s;
-
-            &:hover {
-              background-color: transparent;
-            }
+        svg {
+          width: 20px;
+          height: 20px;
         }
+      }
+
+      button,
+      a {
+        color: #000;
+        background-color: #f8f9f4;
+        padding: 8px 17px;
+        border-radius: 15px;
+        border: none;
+        font-size: 16px;
+        font-family: "Poppins";
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.prof-act {
+          background-color: #ff8a00 !important;
+          color: #fff !important;
+        }
+
+        &:hover {
+          background-color: transparent;
+        }
+      }
     }
   }
 }

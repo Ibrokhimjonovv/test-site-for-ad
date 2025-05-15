@@ -60,6 +60,15 @@
             flex-direction: column;
             align-items: center;
 
+            a {
+                background-color: #52ad67;
+                padding: 7px 12px;
+                border-radius: 7px;
+                color: #fff;
+                position: relative;
+                top: 15px;
+            }
+
             p {
                 font-weight: 600;
                 color: #000000B2;

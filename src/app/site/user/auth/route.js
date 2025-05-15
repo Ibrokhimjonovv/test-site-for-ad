@@ -21,7 +21,7 @@ export async function POST(request) {
     const data = await response.json();
 
     if (!response.ok) {
-      return Response.json({ error: data.error || 'Kirish muvaffaqiyatsiz' }, {
+      return Response.json({ error: data.detail }, {
         status: response.status
       });
     }

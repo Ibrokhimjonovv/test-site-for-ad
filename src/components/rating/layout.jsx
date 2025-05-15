@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import crown from "@/assets/crown.png";
 import "./layout.scss";
 import BalanceTopUp from '../top-up-balance/layout';
+import Link from 'next/link';
 
 const Rating = ({ userId, user, allUsers, balance }) => {
-    
+
     const formattedNumber = new Intl.NumberFormat('de-DE').format(balance ? balance : 0);
 
-    
+
 
     return (
         <div id='rating'>
@@ -26,7 +27,10 @@ const Rating = ({ userId, user, allUsers, balance }) => {
                 <p id='f-p'>Mening balansim</p>
                 <div className={`results-cont`}>
                     <p>{formattedNumber} UZS</p>
-                    <BalanceTopUp user={user}/>
+                    {/* <BalanceTopUp user={user}/> */}
+                    <Link href="/top-up-balance">
+                        Balansni oshirish
+                    </Link>
                 </div>
             </div>
         </div>
