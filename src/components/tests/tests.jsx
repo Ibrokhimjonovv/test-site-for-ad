@@ -16,7 +16,7 @@ export default function Tests() {
     const fetchTests = async () => {
       try {
         const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-        const response = await fetch(`${baseUrl}/site/categories`, {
+        const response = await fetch(`/site/categories`, {
           cache: 'no-store'
         });
 

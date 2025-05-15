@@ -34,7 +34,7 @@ export async function POST(request) {
       const data = await response.json();
   
       if (!response.ok) {
-        return new Response(JSON.stringify({ error: data.message || 'Registration failed' }), {
+        return new Response(JSON.stringify({ error: data || 'Registration failed' }), {
           status: response.status,
           headers: { 'Content-Type': 'application/json' }
         });
