@@ -100,7 +100,7 @@ const AccessProvider = ({ children }) => {
                 setLoginStat,
                 registerStat,
                 setRegisterStat,
-                profileData, setProfileData, allUsers, profileLoading
+                profileData, setProfileData, allUsers, profileLoading, setProfileLoading
             }}
         >
             {children}

@@ -1,0 +1,221 @@
+.create-test {
+    max-width: 1366px;
+    margin: 0 auto;
+    padding: 0 50px;
+
+    .add-tests {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        width: 100%;
+        height: 70px;
+        margin-top: 20px;
+
+        button {
+            background-color: #1AD079;
+            padding: 10px;
+            font-weight: 600;
+            color: #fff;
+            border-radius: 7px;
+            border: 1px solid #16a05d;
+            border-bottom: 3px solid #16a05d;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+
+            &:active {
+                border-bottom: 1px solid #16a05d;
+                transform: translateY(1px);
+            }
+        }
+    }
+
+    .create-tests-offcanvas {
+        height: 100vh;
+        width: 100%;
+        background-color: #fff;
+        z-index: -2;
+        opacity: 0;
+        position: fixed;
+        // right: -100%;
+        top: 0;
+        left: 0;
+        padding: 30px;
+        overflow-y: auto;
+
+        &.active {
+            opacity: 1;
+            z-index: 2;
+            // right: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            row-gap: 10px;
+
+            h2 {
+                text-align: center;
+            }
+
+            .one-row {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 20px;
+
+                .input-row {
+                    width: 30%;
+                }
+            }
+
+            .tests-cards {
+                display: flex;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                padding: 20px;
+                gap: 20px;
+
+                .test-card {
+                    max-width: 350px;
+                    box-shadow: 0 0 10px #0000004b;
+                    border-radius: 7px;
+                    padding: 20px;
+                    width: 100%;
+
+                    .department-department-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    }
+
+                    .department-item {
+                        input[type="number"] {
+                            width: 100%;
+                        }
+                    }
+
+                    ul {
+                        margin-top: 15px;
+
+                        li {
+                            border: 1px solid #999;
+                            padding: 10px;
+                            border-radius: 5px;
+                        }
+
+                        button {
+                            background-color: rgba(255, 0, 0, 0.664);
+                            color: #fff;
+                            border-color: red;
+                        }
+                    }
+
+
+                    button {
+                        margin-top: 15px;
+                        width: 100%;
+                    }
+                }
+
+                button {
+                    cursor: pointer;
+                    width: 150px;
+                    height: 45px;
+                    border: 1px solid #16a05d;
+                    border-radius: 5px;
+                    background-color: #1AD079;
+                    font-size: 15px;
+                    color: #fff;
+                    border-bottom: 3px solid #16a05d;
+
+                    &:active {
+                        transform: translateY(2px);
+                        border-bottom: 1px solid #16a05d;
+                    }
+                }
+            }
+
+            .input-row {
+                display: flex;
+                flex-direction: column;
+
+                button {
+                    background-color: #1AD079;
+                    padding: 10px;
+                    font-weight: 600;
+                    color: #fff;
+                    border-radius: 7px;
+                    border: 1px solid #16a05d;
+                    border-bottom: 3px solid #16a05d;
+                    cursor: pointer;
+                    transition: all 0.1s ease-in-out;
+
+                    &:active {
+                        border-bottom: 1px solid #16a05d;
+                        transform: translateY(1px);
+                    }
+                }
+
+                label {
+                    font-size: 14px;
+                    color: #444;
+                }
+
+                input,
+                select {
+                    height: 40px;
+                    outline: none;
+                    border-radius: 5px;
+                    border: 2px solid #99999991;
+                    padding: 0 5px;
+                    font-size: 15px;
+                    background-color: #fff;
+
+                    &[type="file"] {
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .btns {
+                margin-top: 15px;
+                display: flex;
+                justify-content: flex-end;
+
+                button {
+                    cursor: pointer;
+                    width: 150px;
+                    height: 45px;
+                    border: 1px solid #16a05d;
+                    border-radius: 5px;
+                    background-color: #1AD079;
+                    font-size: 15px;
+                    color: #fff;
+                    border-bottom: 3px solid #16a05d;
+
+                    &:active {
+                        transform: translateY(2px);
+                        border-bottom: 1px solid #16a05d;
+                    }
+
+                    &[type="button"] {
+                        background-color: transparent;
+                        border: none;
+                        color: red;
+                    }
+                }
+            }
+        }
+    }
+
+    .create-tests-offcanvas-shape {
+        background-color: #00000083;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: 1;
+    }
+}

@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import "@/styles/global.scss"
 import Login from "@/components/login/page";
 import Register from "@/components/register/page";
+import HeaderSwitcher from "@/components/headerSwitcher/headerSwitcher";
 
 const poppins = Poppins({
   weight: ['400', '500'],
@@ -21,7 +22,7 @@ export default function RootLayout({ children }) {
     <AccessProvider>
       <html lang="en">
         <body className={`${poppins.className} `}>
-          <Header />
+          <HeaderSwitcher />
           <Login />
           <Register />
           <main>{children}</main>

@@ -1,0 +1,134 @@
+.tests-list {
+    .edit-container-shape {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: #00000025;
+        z-index: 99;
+    }
+    .edit-container {
+        background-color: #fff;
+        width: 400px;
+        height: 100vh;
+        position: fixed;
+        right: 0;
+        top: 0;
+        padding: 20px;
+        z-index: 999;
+        row-gap: 20px;
+        display: flex;
+        flex-direction: column;
+
+        .input-row {
+            display: flex;
+            flex-direction: column;
+
+            label {
+                font-size: 14px;
+                color: #444;
+            }
+
+            input,
+            select {
+                height: 40px;
+                outline: none;
+                border-radius: 5px;
+                border: 2px solid #99999991;
+                padding: 0 5px;
+                font-size: 15px;
+                background-color: #fff;
+
+                &[type="file"] {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .btns {
+            display: flex;
+            justify-content: space-between;
+
+            button {
+                cursor: pointer;
+                width: 48%;
+                height: 45px;
+                border: 1px solid #16a05d;
+                border-radius: 5px;
+                background-color: #1AD079;
+                font-size: 15px;
+                color: #fff;
+                border-bottom: 3px solid #16a05d;
+
+                &:active {
+                    transform: translateY(2px);
+                    border-bottom: 1px solid #16a05d;
+                }
+
+                &[type="button"] {
+                    background-color: transparent;
+                    border: none;
+                    color: red;
+                }
+            }
+        }
+    }
+
+    .tests-container {
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+        padding: 10px;
+
+
+
+        .test-item {
+            box-shadow: 0 0 10px #00000071;
+            border-radius: 7px;
+            padding: 20px;
+            position: relative;
+
+
+
+            img {
+                width: 200px;
+            }
+
+            &:hover {
+                box-shadow: 0 0 0 1px #000;
+            }
+
+            .test-btns {
+                display: flex;
+                position: absolute;
+                right: 20px;
+                gap: 20px;
+                top: 20px;
+
+                button {
+                    background-color: transparent;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: none;
+                    cursor: pointer;
+                    width: 35px;
+                    height: 35px;
+
+                    &:hover {
+                        img {
+                            opacity: .7;
+                        }
+                    }
+
+                    img {
+                        width: 30px;
+                        // height: 30px;
+                        object-fit: cover;
+                    }
+                }
+            }
+        }
+    }
+}

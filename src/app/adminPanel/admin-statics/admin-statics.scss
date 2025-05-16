@@ -1,0 +1,49 @@
+.admin-results-container {
+    width: 100%;
+    max-width: 1366px;
+    padding: 0 30px;
+    margin: 0 auto;
+    display: flex;
+    margin-top: 20px;
+    flex-direction: column;
+    row-gap: 20px;
+
+    .result-list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+
+        .result-item {
+            box-shadow: 0 0 10px #00000063;
+            border-radius: 7px;
+            padding: 20px;
+            cursor: pointer;
+
+            .hidden {
+                transition: all .2s ease-in-out;
+                max-height: 0;
+                overflow: hidden;
+
+                &.active {
+                    max-height: 700px;
+                }
+            }
+
+            p {
+                padding: 5px 0;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            ul {
+                li {
+                    padding: 5px 0;
+                }
+            }
+
+            &:hover {
+                box-shadow: 0 0 1px #000;
+            }
+        }
+    }
+}

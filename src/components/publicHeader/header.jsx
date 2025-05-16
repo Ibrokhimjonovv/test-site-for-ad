@@ -18,7 +18,7 @@ const HeaderSkeleton = () => {
 };
 
 const Header = () => {
-  const { setLoginStat, setRegisterStat, profileData, profileLoading} = useContext(AccessContext);
+  const { setLoginStat, setRegisterStat, profileData, profileLoading } = useContext(AccessContext);
 
   const pathname = usePathname()
 
@@ -57,7 +57,7 @@ const Header = () => {
                     <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M256 176v160M336 256H176"></path>
                   </svg>
                 </Link>
-                <Link href="/profile" className={pathname === '/profile' ? "prof-act" : ""}>Shaxsiy kabinet</Link>
+                <Link href={profileData.is_superuser ? "/adminPanel/admin-sciences" : "/profile"} className={pathname === '/profile' ? "prof-act" : ""}>{profileData.is_superuser ? "Admin panel" : "Shaxsiy kabinet"}</Link>
               </>
             ) : (
               <>

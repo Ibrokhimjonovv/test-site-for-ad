@@ -1,0 +1,207 @@
+#admin-sciences {
+    .sciences-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 20px 40px;
+        row-gap: 30px;
+        max-width: 1366px;
+        margin: 0 auto;
+
+        .add-sciences {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            width: 100%;
+            height: 70px;
+            
+            button {
+                background-color: #1AD079;
+                padding: 10px;
+                font-weight: 600;
+                color: #fff;
+                border-radius: 7px;
+                border: 1px solid #16a05d;
+                border-bottom: 3px solid #16a05d;
+                cursor: pointer;
+                transition: all 0.1s ease-in-out;
+
+                &:active {
+                    border-bottom: 1px solid #16a05d;
+                    transform: translateY(1px);
+                }
+            }
+        }
+
+        .sciences-offcanvas, .edit-offcanvas {
+            height: 100vh;
+            width: 500px;
+            background-color: #fff;
+            z-index: 2;
+            position: fixed;
+            right: -100%;
+            top: 0;
+            padding: 30px;
+
+            &.active {
+                right: 0;
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                row-gap: 10px;
+                .input-row {
+                    display: flex;
+                    flex-direction: column;
+
+                    label {
+                        font-size: 14px;
+                        color: #444;
+                    }
+
+                    input, .file-label {
+                        display: flex;
+                        align-items: center;
+                        height: 40px;
+                        outline: none;
+                        border-radius: 5px;
+                        border: 2px solid #99999991;
+                        padding: 0 5px;
+                        font-size: 15px;
+                        overflow: hidden;
+
+                        &[type="file"] {
+                            cursor: pointer;
+                        }
+                    }
+                }
+                .btns {
+                    margin-top: 15px;
+                    display: flex;
+                    justify-content: space-between;
+
+                    button {
+                        cursor: pointer;
+                        width: 48%;
+                        height: 45px;
+                        border: 1px solid #16a05d;
+                        border-radius: 5px;
+                        background-color: #1AD079;
+                        font-size: 15px;
+                        color: #fff;
+                        border-bottom: 3px solid #16a05d;
+
+                        &:active {
+                            transform: translateY(2px);
+                            border-bottom: 1px solid #16a05d;
+                        }
+
+                        &[type="button"] {
+                            background-color: transparent;
+                            border: none;
+                            color: red;
+                        }
+                    }
+                }
+            }
+        }
+
+        .sciences-offcanvas-shape {
+            background-color: #00000083;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        a {
+            width: 100%;
+        }
+
+        .sciences-items {
+            display: flex;
+            gap: 20px;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            color: #333;
+            box-shadow: 0 0 10px #00000071;
+            position: relative;
+
+            .for-admin {
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                row-gap: 20px;
+                right: 40px;
+                top: 50%;
+                transform: translateY(-50%);
+                
+                button {
+                    background-color: transparent;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: none;
+                    cursor: pointer;
+                    width: 35px;
+                    height: 35px;
+
+                    img {
+                        width: 30px;
+                        height: 30px;
+                    }
+                }
+            }
+
+            
+            &:hover {
+                box-shadow: unset;
+            }
+
+            img {
+                width: 120px;
+                height: 120px;
+                border-radius: 8px;
+                object-fit: cover;
+            }
+
+            .texts{
+                h1 {
+                    font-size: 29px;
+                }
+
+                ul {
+                    li {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 10px;
+
+                        span {
+                            font-size: 18px;
+                        }
+
+                        .green {
+                            width: 10px;
+                            height: 10px;
+                            background-color: #333;
+                            display: inline-block;
+                            border-radius: 50%;
+                            margin-right: 5px;
+                        }
+
+                        .count {
+                            color: #333 !important;
+                            font-weight: 600;
+                        }
+                          
+                    }
+                }
+            }
+        }
+    }
+}
