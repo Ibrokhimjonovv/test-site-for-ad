@@ -294,7 +294,7 @@ export default function TestsLayout() {
               </div>
               <div className="card-bottom">
                 <p className={`${test.price === "Bepul" ? "" : "green"}`}>
-                  {test.price || 0} UZS
+                  {test.price === 0 ? "Bepul" : `${test.price} UZS`}
                 </p>
                 <span></span>
                 {formatTestTime(test.time) || "0 daqiqa"}
@@ -307,8 +307,7 @@ export default function TestsLayout() {
           </div>
         )}
       </div>
-
-      {/* Test Confirmation Modal */}
+  
       <Modal onClose={() => setShowModal(false)} showModal={showModal}>
         {selectedTest && (
           <div className="test-confirmation-modal">
@@ -334,7 +333,8 @@ export default function TestsLayout() {
                     {stLoading ? "Boshlanmoqda..." : "Boshlash"}
                   </button>
                 ) : (
-                  <button id='st' onClick={() => {setLoginStat(true)
+                  <button id='st' onClick={() => {
+                    setLoginStat(true)
                     setShowModal(false)
                   }}>Kirish</button>
                 )
