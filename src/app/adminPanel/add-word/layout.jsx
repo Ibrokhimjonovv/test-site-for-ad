@@ -28,7 +28,7 @@ const AddFile = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8888/api/departments/`);
+        const response = await fetch(`https://test.smartcoders.uz/api/departments/`);
         if (!response.ok) throw new Error("Bo'limlarni yuklashda xato!");
         const data = await response.json();
         setDepartments(data);
@@ -43,7 +43,7 @@ const AddFile = () => {
   useEffect(() => {
     const fetchSciences = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8888/api/sciences/`);
+        const response = await fetch(`https://test.smartcoders.uz/api/sciences/`);
         if (!response.ok) throw new Error("Fanlarni yuklashda xato!");
         const data = await response.json();
         setSciences(data);
@@ -68,7 +68,7 @@ const AddFile = () => {
     formData.append("file", wordFile);
 
     try {
-      const response = await fetch(`http://37.27.23.255:8888/api/upload-word/`, {
+      const response = await fetch(`https://test.smartcoders.uz/api/upload-word/`, {
         method: "POST",
         body: formData,
       });
@@ -96,7 +96,7 @@ const AddFile = () => {
     formData.append("file", zipFile);
 
     try {
-      const response = await fetch(`http://37.27.23.255:8888/api/upload-folder/`, {
+      const response = await fetch(`https://test.smartcoders.uz/api/upload-folder/`, {
         method: "POST",
         body: formData,
       });

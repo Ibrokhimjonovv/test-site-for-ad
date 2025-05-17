@@ -46,7 +46,7 @@ const StaticLayout = () => {
   useEffect(() => {
     const fetchSciences = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8888/api/sciences/`);
+        const response = await fetch(`https://test.smartcoders.uz/api/sciences/`);
         if (!response.ok) throw new Error("Fanlarni yuklashda xatolik!");
         const data = await response.json();
         setSciences(data);
@@ -60,7 +60,7 @@ const StaticLayout = () => {
   useEffect(() => {
     const fetchLoginActivity = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8888/api/user-profile/`, {
+        const response = await fetch(`https://test.smartcoders.uz/api/user-profile/`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${tokenn}`,
@@ -121,7 +121,7 @@ const StaticLayout = () => {
     const fetchTestStats = async () => {
       try {
         const response = await fetch(
-          `http://37.27.23.255:8888/api/statistics/?user=${profileData.id}`
+          `https://test.smartcoders.uz/api/statistics/?user=${profileData.id}`
         );
         if (!response.ok) throw new Error("Statistikani olishda xatolik!");
         const data = await response.json();

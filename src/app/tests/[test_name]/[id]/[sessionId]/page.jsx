@@ -93,7 +93,7 @@ export default function TestComponent() {
         setLoading(true);
 
         // 1. Fetch test title/details from first endpoint
-        // const testTitleRes = await fetch(`http://37.27.23.255:8888/api/tests_title/${testId}/`);
+        // const testTitleRes = await fetch(`https://test.smartcoders.uz/api/tests_title/${testId}/`);
         // const testTitleData = await testTitleRes.json();
 
         // if (!testTitleRes.ok) {
@@ -101,7 +101,7 @@ export default function TestComponent() {
         // }
 
         // 2. Fetch test questions from second endpoint
-        const questionsRes = await fetch(`http://37.27.23.255:8888/api/tests/${testId}/`);
+        const questionsRes = await fetch(`https://test.smartcoders.uz/api/tests/${testId}/`);
         const questionsData = await questionsRes.json();
 
 
@@ -303,7 +303,7 @@ export default function TestComponent() {
 
       // 5. API ga so'rovlar yuborish
       const [statsResponse, finishResponse] = await Promise.all([
-        fetch(`http://37.27.23.255:8888/api/statistics/`, {
+        fetch(`https://test.smartcoders.uz/api/statistics/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -311,7 +311,7 @@ export default function TestComponent() {
           },
           body: JSON.stringify(resultData),
         }),
-        fetch(`http://37.27.23.255:8888/api/finish/${testId}/`, {
+        fetch(`https://test.smartcoders.uz/api/finish/${testId}/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

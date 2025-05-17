@@ -56,7 +56,7 @@ const Profile = () => {
 
 
   useEffect(() => {
-    fetch(`http://37.27.23.255:8888/api/user_rank/${profileData?.id}/`)
+    fetch(`https://test.smartcoders.uz/api/user_rank/${profileData?.id}/`)
       .then(response => response.json())
       .then(data => {
         setUserRank(data);

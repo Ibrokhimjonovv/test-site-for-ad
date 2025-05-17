@@ -15,7 +15,7 @@ const ComplatedTests = ({ id }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://37.27.23.255:8888/api/user-statistics/?user_id=${id}`);
+                const response = await fetch(`https://test.smartcoders.uz/api/user-statistics/?user_id=${id}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

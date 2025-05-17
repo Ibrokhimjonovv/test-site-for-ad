@@ -1,7 +1,7 @@
 // export const dynamic = 'force-dynamic'; 
 
 export async function GET() {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://37.27.23.255:8888';
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://test.smartcoders.uz';
     
     try {
       const response = await fetch(`${API_BASE}/api/tests_title/`, {

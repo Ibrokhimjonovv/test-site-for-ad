@@ -57,7 +57,7 @@ const Layout = () => {
     useEffect(() => {
         const userProfile = async () => {
             try {
-                const response = await fetch(`http://37.27.23.255:8888/api/user-profile/`, {
+                const response = await fetch(`https://test.smartcoders.uz/api/user-profile/`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -175,7 +175,7 @@ const Layout = () => {
             if (!updatedData.password) {
                 delete updatedData.password;
             }
-            const response = await fetch(`http://37.27.23.255:8888/api/user-update/`, {
+            const response = await fetch(`https://test.smartcoders.uz/api/user-update/`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

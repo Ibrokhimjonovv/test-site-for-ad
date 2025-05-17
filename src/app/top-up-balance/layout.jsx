@@ -63,7 +63,7 @@ const BalanceTopUp = () => {
 
     try {
       const userId = profileData.id;
-      const orderRes = await fetch(`http://37.27.23.255:8888/api/get_order_id/`, {
+      const orderRes = await fetch(`https://test.smartcoders.uz/api/get_order_id/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId }),
@@ -79,7 +79,7 @@ const BalanceTopUp = () => {
       );
 
       const orderCreateRes = await fetch(
-        `http://37.27.23.255:8888/api/order/create/`,
+        `https://test.smartcoders.uz/api/order/create/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
