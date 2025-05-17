@@ -59,8 +59,8 @@ const Header = ({ timeLeft, setTimeLeft, testStatus, currentTest, currentQuestio
                 <div className="agg-content">
                     <h2>Haqiqatdan ham testni yakunlamoqchimisiz?</h2>
                     <div className="agg-actions">
-                        <button className="no" onClick={() => setAggModal(false)}>Yo'q</button>
-                        <button className="yes" onClick={finishTest}>Ha</button>
+                        <button className="cancel-button" onClick={() => setAggModal(false)}>Yo'q</button>
+                        <button className="end-button" onClick={finishTest}>Ha</button>
                     </div>
                 </div>
             </div>

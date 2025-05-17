@@ -193,9 +193,10 @@
   }
 
   .modal-content {
-    width: 500px;
+    max-width: 500px;
+    min-width: 400px;
     background-color: #fff;
-    padding: 20px;
+    padding: 30px 20px;
     border-radius: 15px;
     position: relative;
     box-shadow: 0 0 5px #ffffff57, 0 0 10px #ffffff57;
@@ -248,28 +249,35 @@
         font-size: 16px;
         font-family: 'Poppins';
         cursor: pointer;
+        min-width: 125px;
 
         
 
         &.cancel-button {
-          border: 1px solid red;
+          border: 2px solid red;
+          border-bottom-width: 4px;
           color: red;
           transition: all 0.2s;
-
-          &:hover {
-            background-color: red;
-            color: #fff;
+          // background-color: red;
+          
+          &:active {
+            // color: #fff;
+            border-bottom-width: 2px;
+            transform: translateY(2px);
           }
         }
 
         &.start-button, &#st {
-          border: 1px solid green;
-          color: green;
+          border: 2px solid #ff8a00;
+          border-bottom-width: 4px;
+          color: #ff8a00;
           transition: all 0.2s;
-
-          &:hover {
-            background-color: green;
-            color: #fff;
+          // background-color: red;
+          
+          &:active {
+            // color: #fff;
+            border-bottom-width: 2px;
+            transform: translateY(2px);
           }
         }
       }

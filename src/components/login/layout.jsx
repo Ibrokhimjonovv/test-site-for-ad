@@ -11,6 +11,7 @@ const Login = () => {
         password: '',
         action: 'login'
     });
+    const [type, setType] = useState("username");
     const [show, setShow] = useState(true);
     const [errors, setErrors] = useState({
         login: '',
@@ -20,6 +21,7 @@ const Login = () => {
     const { registerStat, setRegisterStat, setLoginStat, loginStat } = useContext(AccessContext);
     const router = useRouter();
 
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -28,11 +30,33 @@ const Login = () => {
         }));
     };
 
-    const handleFocus = (e) => {
-        if (!formData.phone_number) {
-            setTimeout(() => {
-                e.target.setSelectionRange(6, 6);
-            }, 0);
+    const handleTypeChange = (newType) => {
+        setType(newType);
+        // Type o'zgarganda login maydonini tozalash
+        setFormData(prev => ({
+            ...prev,
+            login: ''
+        }));
+        // Xatoliklarni ham tozalash
+        setErrors(prev => ({
+            ...prev,
+            login: ''
+        }));
+    };
+
+    const handlePhoneChange = (e) => {
+        const value = e.target.value;
+        setFormData(prev => ({
+            ...prev,
+            login: value
+        }));
+
+        // Validate phone number (faqat tozalangan raqamlar asosida)
+        const cleaned = cleanPhoneNumber(value);
+        if (cleaned.length < 9) {
+            setErrors(prev => ({ ...prev, login: "To'liq telefon raqam kiriting!" }));
+        } else {
+            setErrors(prev => ({ ...prev, login: "" }));
         }
     };
 
@@ -41,7 +65,9 @@ const Login = () => {
         replacement: { _: /\d/ },
         showMask: true,
         separate: true,
+        onChange: handlePhoneChange // Add onChange handler to the mask
     });
+
 
     const validateForm = () => {
         let isValid = true;
@@ -66,6 +92,10 @@ const Login = () => {
         setErrors({ login: "", password: "" })
     }
 
+    const cleanPhoneNumber = (phone) => {
+        return phone.replace(/\D/g, '').replace('998', '');
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -76,13 +106,17 @@ const Login = () => {
         setLoading(true);
 
         try {
+            const username = type === "phone"
+                ? cleanPhoneNumber(formData.login)
+                : formData.login;
+
             const response = await fetch('/site/user/auth/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: formData.login,
+                    username: username, // Tozalangan telefon raqam
                     password: formData.password,
                     last_login: new Date().toISOString(),
                 })
@@ -135,24 +169,39 @@ const Login = () => {
                     </h1>
 
                     <div className="login-type">
-                        <div className="phone">
+                        <div className={`slide-type ${type === "username" ? "left" : "right"}`} >
+                            {type === "username" ? "Foydalanuvchi nomi" : "Telefon raqam"}
+                        </div>
+                        <div className={`username ${type === "username" ? "act" : ""}`} onClick={() => handleTypeChange("username")}  >
+                            Foydalanuvchi nomi
+                        </div>
+                        <div className={`phone ${type === "phone" ? "act" : ""}`} onClick={() => handleTypeChange("phone")}>
                             Telefon raqam
                         </div>
                     </div>
 
 
                     <form onSubmit={handleSubmit}>
-                        <div className="input-row">
+                        <div className={`input-row`}>
                             <input
                                 type="text"
                                 name="login"
-                                placeholder='Telefon yoki foydalanuvchi nomi'
+                                placeholder='Foydalanuvchi nomini kiriting'
                                 value={formData.login}
-                                onChange={handleChange}
+                                onChange={type === "username" ? handleChange : null}
+                                className={`us-input ${type === "username" ? "act" : ""}`}
+                            />
+                            <input
+                                ref={inputRef}
+                                type="tel"
+                                name="login" // Bu nom formData bilan bog'liq bo'lishi uchun kerak
+                                value={formData.login}
+                                onChange={type === "phone" ? handlePhoneChange : null}
+                                className={`phone-input ${type === "phone" ? "act" : ""}`}
+                                placeholder='+998 (__) ___-__-__'
                             />
                             {errors.login && <span className="error-text">{errors.login}</span>}
                         </div>
-
                         <div className="input-row">
                             <input
                                 type={show ? "password" : "text"}

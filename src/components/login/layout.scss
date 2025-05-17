@@ -80,17 +80,53 @@
       padding: 5px;
       width: 50%;
       height: 50px;
-      border-radius: 13px;
+      border-radius: 18px;
       margin-top: 15px;
+      display: flex;
+      gap: 5px;
+      position: relative;
+      min-height: 50px;
 
-      .phone {
+      .slide-type {
+        width: 48.5%;
+        height: 80%;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #ff8a00;
+        border-radius: 15px;
+        transition: all .2s;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2;
+        
+        &.left {
+          left: 5px;
+        }
+
+        &.right {
+          left: calc(50.5%);
+        }
+      }
+
+      .phone, .username {
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 15px;
         background-color: #fff;
-        width: 100%;
+        width: 50%;
         height: 100%;
+        transition: all .2s;
+        overflow: hidden;
+
+
+        &.act {
+          opacity: 0;
+        }
       }
     }
 
@@ -99,6 +135,7 @@
       .input-row {
         margin-top: 20px;
         position: relative;
+        
 
         input {
           border: 2px solid #d7d8d4;
@@ -109,6 +146,14 @@
           font-size: 16px;
           font-family: "Poppins";
           padding-right: 40px !important;
+          
+          &.us-input, &.phone-input {
+            display: none;
+
+            &.act {
+              display: block;
+            }
+          }
         }
 
         button[type="button"] {

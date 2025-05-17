@@ -7,7 +7,7 @@ import Loading from "@/components/loading/layout";
 import NotFound from "@/app/not-found";
 import { AccessContext } from "@/contexts/contexts";
 // import InputMask from "react-input-mask";
-
+import { useMask } from '@react-input/mask';
 const CreateTest = () => {
   const [categories, setCategories] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -68,10 +68,6 @@ const CreateTest = () => {
     fetchData();
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleCardChange = (index, key, value) => {
     setTestCards((prevCards) =>
@@ -286,7 +282,28 @@ const CreateTest = () => {
     );
   };
 
-  if(!profileData || !profileData.is_superuser) {
+  const timeInputRef = useMask({
+    mask: '__:__:__',
+    replacement: { _: /\d/ },
+    showMask: true,
+    separate: true,
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'time') {
+      // Vaqt formati tekshiriladi (00:00:00)
+      const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+      if (value.length === 8 && !timeRegex.test(value)) {
+        return; // Noto'g'ri format kiritilganda o'zgartirishni amalga oshirmaymiz
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  if (!profileData || !profileData.is_superuser) {
     return <NotFound />
   }
 
@@ -362,14 +379,15 @@ const CreateTest = () => {
                 </div>
                 <div className="input-row">
                   <label>Test vaqti (soat, minut):</label>
-                  {/* <InputMask
-                    mask="99:99"
-                    placeholder="--:--"
-                    id="time"
+                  <input
+                    ref={timeInputRef}
+                    type="text"
                     name="time"
                     value={formData.time}
                     onChange={handleInputChange}
-                  /> */}
+                    placeholder="00:00:00"
+                    required
+                  />
                 </div>
                 <div className="input-row">
                   <label>Test narxi:</label>

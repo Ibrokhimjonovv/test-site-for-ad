@@ -54,7 +54,7 @@ export default function TestsLayout() {
   const [categories, setCategories] = useState([]);
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { setLoginStat, profileData } = useContext(AccessContext)
+  const { setLoginStat, profileData, setProfileData } = useContext(AccessContext)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -154,10 +154,10 @@ export default function TestsLayout() {
         return;
       }
 
-      // setProfileData(prev => ({
-      //   ...prev,
-      //   balance: prev.balance - selectedTest.price
-      // }));
+      setProfileData(prev => ({
+        ...prev,
+        balance: prev.balance - selectedTest.price
+      }));
 
       const response = await fetch(`https://test.smartcoders.uz/api/start-test/`, {
         method: "POST",
@@ -177,10 +177,10 @@ export default function TestsLayout() {
         router.push(`/tests/${formatTestName(selectedTest.title)}/${selectedTest.id}/${sessionId}`);
         setStLoading(false)
       } else {
-        // setProfileData(prev => ({
-        //   ...prev,
-        //   balance: prev.balance + selectedTestPrice
-        // }));
+        setProfileData(prev => ({
+          ...prev,
+          balance: prev.balance + selectedTest.price
+        }));
         const errorData = await response.json();
         setError(errorData.detail);
         setStLoading(false)
@@ -314,7 +314,7 @@ export default function TestsLayout() {
             <h2>{selectedTest.title}</h2>
             <p>{selectedTest.testDescription}</p>
             <div className="test-details">
-              <p><span>Savollar soni:</span> {selectedTest.tests_count}</p>
+              <p><span>Savollar soni:</span> {selectedTest.tests_count || "Mavjud emas"}</p>
               <p><span>Vaqt:</span> {formatTestTime(selectedTest.time)}</p>
               <p><span>Narxi:</span> {selectedTest.price} UZS</p>
             </div>

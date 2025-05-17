@@ -154,20 +154,21 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
 
     // Question navigation
     const handleNextQuestion = () => {
-        if (selectedOption === questions[currentQuestionIndex].correctAnswer) {
-            setScore(prev => prev + 1);
-        }
+    // Tanlangan variantni tekshirish sharti olib tashlandi
+    if (selectedOption === questions[currentQuestionIndex].correctAnswer) {
+        setScore(prev => prev + 1);
+    }
 
-        if (currentQuestionIndex < questions.length - 1) {
-            const nextQuestionIndex = currentQuestionIndex + 1;
-            setCurrentQuestionIndex(nextQuestionIndex);
-            setSelectedOption(
-                sessionManager.getSession(sessionId).answers[nextQuestionIndex] ?? null
-            );
-        } else {
-            finishTest();
-        }
-    };
+    if (currentQuestionIndex < questions.length - 1) {
+        const nextQuestionIndex = currentQuestionIndex + 1;
+        setCurrentQuestionIndex(nextQuestionIndex);
+        setSelectedOption(
+            sessionManager.getSession(sessionId).answers[nextQuestionIndex] ?? null
+        );
+    } else {
+        finishTest();
+    }
+};
 
     const handlePrevQuestion = () => {
         if (currentQuestionIndex > 0) {
@@ -398,33 +399,33 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
                 </div>
 
                 {/* Navigation buttons */}
-                <div className="navigation-buttons" >
-                    <button
-                        onClick={handlePrevQuestion}
-                        disabled={currentQuestionIndex === 0}
-                    >
-                        Oldingi savol
-                    </button>
+                <div className="navigation-buttons">
+    <button
+        onClick={handlePrevQuestion}
+        disabled={currentQuestionIndex === 0} // Faqat birinchi savolda oldingi tugma disabled
+    >
+        Oldingi savol
+    </button>
 
-                    {
-                        currentQuestionIndex < questions.length - 1 ? (
-                            <button
-                                onClick={handleNextQuestion}
-                                disabled={selectedOption === null}
-                            >
-                                Keyingi savol
-                            </button>
-                        ) : (
-                            <button
-                                onClick={finishTest}
-                                disabled={selectedOption === null}
-                                className="finish-button"
-                            >
-                                Testni yakunlash
-                            </button>
-                        )
-                    }
-                </div >
+    {
+        currentQuestionIndex < questions.length - 1 ? (
+            <button
+                onClick={handleNextQuestion}
+                // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
+            >
+                Keyingi savol
+            </button>
+        ) : (
+            <button
+                onClick={finishTest}
+                // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
+                className="finish-button"
+            >
+                Testni yakunlash
+            </button>
+        )
+    }
+</div>
             </div>
         </>
     )

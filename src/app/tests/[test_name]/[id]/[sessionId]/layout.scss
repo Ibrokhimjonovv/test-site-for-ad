@@ -16,7 +16,7 @@
     height: 100vh;
     opacity: 0;
     z-index: -99;
-    transition: all .2s;
+    transition: all 0.2s;
 
     &.act {
       opacity: 1;
@@ -28,42 +28,54 @@
       flex-direction: column;
       row-gap: 10px;
       background-color: #fff;
-      padding: 20px;
-      border-radius: 12px;
+      padding: 30px 20px;
+      border-radius: 20px;
+      max-width: 400px;
+      h2 {
+        text-align: center;
+        font-weight: 500;
+      }
 
       .agg-actions {
         display: flex;
         justify-content: center;
         gap: 10px;
+        margin-top: 10px;
 
         button {
-          border-radius: 20px;
+          padding: 10px 15px;
+          border-radius: 12px;
           background-color: transparent;
-          width: 50%;
-          border: 1px solid transparent;
-          padding: 7px 12px;
           font-size: 16px;
-          max-width: 150px;
-          transition: all .2s;
+          font-family: "Poppins";
           cursor: pointer;
+          min-width: 125px;
 
-          &.no {
-            color: #e74c3c;
-            border-color: #e74c3c;
+          &.cancel-button {
+            border: 2px solid red;
+            border-bottom-width: 4px;
+            color: red;
+            transition: all 0.2s;
+            // background-color: red;
 
-            &:hover {
-              background-color: #e74c3c;
-              color: #fff;
+            &:active {
+              // color: #fff;
+              border-bottom-width: 2px;
+              transform: translateY(2px);
             }
           }
 
-          &.yes {
-            color: #4CAF50;
-            border-color: #4CAF50;
+          &.end-button {
+            border: 2px solid #ff8a00;
+            border-bottom-width: 4px;
+            color: #ff8a00;
+            transition: all 0.2s;
+            // background-color: red;
 
-            &:hover {
-              background-color: #4CAF50;
-              color: #fff;
+            &:active {
+              // color: #fff;
+              border-bottom-width: 2px;
+              transform: translateY(2px);
             }
           }
         }
@@ -107,8 +119,8 @@
         border: 1px solid #e74c3c;
         padding: 7px 15px;
         cursor: pointer;
-        transition: all .2s;
-        
+        transition: all 0.2s;
+
         &:hover {
           background-color: #e74c3c;
           color: #fff;
@@ -199,8 +211,6 @@
       }
     }
   }
-
-  
 
   .no-questions {
     text-align: center;
@@ -371,20 +381,20 @@
   border-radius: 8px;
   margin-right: 20px;
   width: 25%;
-  
+
   .subject-section {
     margin-bottom: 15px;
-    
+
     .subject-header {
       margin-bottom: 10px;
-      
+
       h3 {
         font-size: 16px;
         margin: 0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        
+
         .question-count {
           font-size: 14px;
           color: #666;
@@ -392,12 +402,12 @@
         }
       }
     }
-    
+
     .subject-questions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      
+
       .circle {
         width: 32px;
         height: 32px;
@@ -409,36 +419,36 @@
         position: relative;
         font-size: 14px;
         font-weight: 500;
-        
+
         &.neutral {
           background: #e0e0e0;
           color: #333;
         }
-        
+
         &.answered {
-          background: #4CAF50;
-          color: white;
+          background: #ff88003f;
+          color: #ff8a00;
         }
-        
+
         &.correct {
-          background: #4CAF50;
+          background: #4caf50;
           color: white;
         }
-        
+
         &.incorrect {
-          background: #F44336;
+          background: #f44336;
           color: white;
         }
-        
+
         &.unanswered {
-          background: #FFC107;
+          background: #ffc107;
           color: #333;
         }
-        
+
         &.current {
           box-shadow: 0 0 0 2px #ff8907;
         }
-        
+
         .selected-option {
           position: absolute;
           bottom: -5px;
@@ -460,18 +470,16 @@
   }
 }
 
-
-
 @media screen and (max-width: 500px) {
-.zoom-modal {
-  display: flex !important;
-}
+  .zoom-modal {
+    display: flex !important;
+  }
 
-.end-modal {
-  width: 85%;
-}
+  .end-modal {
+    width: 85%;
+  }
 
-.zoom-button {
-  display: unset !important;
-}
+  .zoom-button {
+    display: unset !important;
+  }
 }
