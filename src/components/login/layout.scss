@@ -28,6 +28,9 @@
   opacity: 0;
   z-index: -10;
   transition: all 0.3s;
+  overflow: auto;
+  scrollbar-width: none;
+
 
   &.popped {
     opacity: 1;
@@ -42,7 +45,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    height: 100%;
+    min-height: 100%;
     position: relative;
 
     .close {
@@ -132,6 +135,10 @@
 
     form {
       width: 50%;
+      .error-message {
+        font-size: 14px;
+        text-align: center;
+      }
       .input-row {
         margin-top: 20px;
         position: relative;
@@ -212,6 +219,34 @@
         }
 
         margin-top: 15px;
+      }
+    }
+  }
+}
+
+
+@media screen and (max-width: 500px) {
+  .login-popup {
+    width: 90%;  
+    padding: 15px;
+    height: 70vh;
+    
+    .login-container {
+      overflow: auto;
+      padding: 20px 0;
+
+      h1 {
+        font-size: 22px;
+        text-align: center;
+      }
+
+      .login-type {
+        width: 90%;
+        font-size: 12px !important;
+      }
+
+      form { 
+        width: 90%;
       }
     }
   }

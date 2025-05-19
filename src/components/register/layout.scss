@@ -108,7 +108,7 @@
         flex-wrap: wrap;
         gap: 20px;
       }
-      
+
       .input-row {
         width: 48%;
       }
@@ -161,7 +161,8 @@
         // justify-content: center;
         flex-direction: column;
 
-        input, select {
+        input,
+        select {
           border: 2px solid #d7d8d4;
           border-radius: 15px;
           width: 100%;
@@ -201,7 +202,6 @@
         //     width: 20px !important;
         //   }
         // }
-
       }
       .toggle-action {
         button {
@@ -209,13 +209,13 @@
           border: none;
           font-size: 16px;
           font-family: "Poppins";
-          
+
           span {
             cursor: pointer;
             color: #ff8a00;
           }
         }
-        
+
         margin-top: 15px;
       }
     }
@@ -236,6 +236,73 @@
 
       &:hover {
         background-color: #cf7208;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .register-popup {
+    width: 90%;
+    padding: 15px;
+    height: 70vh;
+
+
+    .register-container {
+      overflow: auto;
+      padding: 20px 0;
+
+      h1 {
+        font-size: 22px !important;
+        text-align: center;
+      }
+
+      .register-type {
+        width: 90%;
+      }
+
+      .last-form {
+        width: 90%;
+
+        .input-row {
+          margin-top: 10px;
+        }
+
+        .n {
+          width: 100%;
+        }
+      }
+      .form {
+        width: 90%;
+
+        .input-row {
+          width: 100%;
+        }
+
+        &.last {
+          flex-direction: column;
+          gap: 0;
+        }
+      }
+
+      .error-text {
+        margin-top: 0 !important;
+        
+        &.al {
+          margin-top: 10px !important;
+          color: red;
+          font-size: 14px;
+          width: 100%;
+          display: block;
+          text-align: center;
+        }
+      }
+      .n {
+        width: 100%;
+        
+        &.fons-sm {
+          font-size: 14px;
+        }
       }
     }
   }

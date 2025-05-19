@@ -365,3 +365,29 @@
     }
   }
 }
+
+@media screen and (max-width: 500px) {
+  .tests-page {
+    padding: 20px;
+
+    .menu {
+      flex-wrap: wrap;
+
+      button {
+        font-size: 14px;
+      }
+    }
+
+    .tests-content {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  } 
+  
+  .modal-overlay {
+    .modal-content {
+      width: 100%;
+      max-width: unset;
+      min-width: unset;
+    }
+  }
+}

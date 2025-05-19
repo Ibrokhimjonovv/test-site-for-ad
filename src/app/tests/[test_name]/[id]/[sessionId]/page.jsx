@@ -85,7 +85,9 @@ export default function TestComponent() {
   const [loading, setLoading] = useState(true);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [isZoomed, setIsZoomed] = useState(false);
-  const { profileData } = useContext(AccessContext)
+  const { profileData } = useContext(AccessContext);
+  const [opTracker, setOpTracker] = useState(false);
+
 
   useEffect(() => {
     const fetchTestData = async () => {
@@ -361,6 +363,8 @@ export default function TestComponent() {
   };
 
 
+
+
   if (questions.length === 0) {
     return (
       <div className="test-container">
@@ -391,17 +395,23 @@ export default function TestComponent() {
       />
 
       <div className="all-questions">
+        <div className="opener" onClick={() => setOpTracker(true)}>
+          <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144" /></svg>
+        </div>
         <ProgressTracker
           test={{
             id: currentTest.id,
             science: currentTest.science,
-            questions: questions
+            questions: questions,
+            title: currentTest.testTitle
           }}
           selectedAnswers={selectedAnswers}
           currentQuestionIndex={currentQuestionIndex}
           isTestFinished={testStatus === 'completed' || testStatus === 'timeout'}
           setCurrentQuestionIndex={setCurrentQuestionIndex}
           sciences={sciences}
+          opener={opTracker}
+          setOpener={setOpTracker}
         />
         <Questions
           toggleZoom={toggleZoom}
@@ -430,7 +440,8 @@ const ProgressTracker = ({
   currentQuestionIndex = 0,
   isTestFinished = false,
   setCurrentQuestionIndex = () => { },
-  sciences = []
+  sciences = [],
+  opener, setOpener
 }) => {
   // Safely extract science IDs and questions
   const scienceIds = Array.isArray(test.science) ? test.science : [];
@@ -529,8 +540,13 @@ const ProgressTracker = ({
 
   const scienceGroups = groupQuestionsByScience();
 
+
   return (
-    <div className="progress-tracker">
+    <div className={`progress-tracker ${opener ? "act" : ""}`}>
+      <div className="closer" onClick={() => setOpener(false)}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144" /></svg>
+      </div>
+      <h2>{test.title}</h2>
       {scienceGroups.map((science) => (
         <div key={science.id} className="subject-section">
           <div className="subject-header">

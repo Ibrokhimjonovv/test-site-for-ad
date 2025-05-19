@@ -177,6 +177,22 @@
   .all-questions {
     display: flex;
     width: 100%;
+
+    .opener {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      left: -2px;
+      top: 100px;
+      border: 2px solid #ff8a00;
+      display: none;
+
+      svg {
+        path {
+          stroke: #ff8a00;
+        }
+      }
+    }
   }
 
   .navigation-buttons {
@@ -382,6 +398,10 @@
   margin-right: 20px;
   width: 25%;
 
+  .closer {
+    display: none !important; 
+  }
+
   .subject-section {
     margin-bottom: 15px;
 
@@ -470,7 +490,102 @@
   }
 }
 
+
 @media screen and (max-width: 500px) {
+  .test-container {
+    padding: 30px 20px;
+
+    .agg-content {
+      width: 90%;
+
+      h2 {
+        font-size: 20px;
+      }
+
+      button {
+        font-size: 15px !important;
+      }
+    }
+
+    .test-header {
+      margin-top: 30px;
+      h2 {
+        display: none;
+      }
+
+      .test-info {
+        flex-direction: row-reverse;
+        align-items: center;
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        .end-test {
+          width: 55%;
+          margin: 0 auto;
+          text-align: center;
+        }
+      }
+    }
+
+    .all-questions {
+      .opener {
+        display: unset !important;
+      }
+      .progress-tracker {
+        padding-top: 40px;
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 90%;
+        height: 100vh;
+        z-index: 9999;
+        transition: all 0.2s;
+
+        .closer {
+          width: 40px;
+          height: 40px;
+          position: absolute;
+          right: 1px;
+          border: 2px solid #ff8a00;
+          display: unset !important;
+
+          svg {
+            transform: rotate(-180deg);
+            path {
+              stroke: #ff8a00;
+            }
+          }
+        }
+
+        &.act {
+          left: 0;
+        }
+
+        h2 {
+          margin-top: 50px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #999;
+        }
+
+        .subject-section {
+          margin-top: 10px;
+        }
+      }
+
+      .question-container {
+        width: 100%;
+      }
+    }
+
+    .navigation-buttons {
+      gap: 5px;
+
+      button {
+        font-size: 14px;
+      }
+    }
+  }
   .zoom-modal {
     display: flex !important;
   }

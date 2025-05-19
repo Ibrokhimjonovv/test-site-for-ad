@@ -183,23 +183,26 @@ const Login = () => {
 
                     <form onSubmit={handleSubmit}>
                         <div className={`input-row`}>
-                            <input
-                                type="text"
-                                name="login"
-                                placeholder='Foydalanuvchi nomini kiriting'
-                                value={formData.login}
-                                onChange={type === "username" ? handleChange : null}
-                                className={`us-input ${type === "username" ? "act" : ""}`}
-                            />
-                            <input
-                                ref={inputRef}
-                                type="tel"
-                                name="login" // Bu nom formData bilan bog'liq bo'lishi uchun kerak
-                                value={formData.login}
-                                onChange={type === "phone" ? handlePhoneChange : null}
-                                className={`phone-input ${type === "phone" ? "act" : ""}`}
-                                placeholder='+998 (__) ___-__-__'
-                            />
+                            {type === "username" ? (
+                                <input
+                                    type="text"
+                                    name="login"
+                                    placeholder='Foydalanuvchi nomini kiriting'
+                                    value={formData.login}
+                                    onChange={handleChange}
+                                    className="us-input act"
+                                />
+                            ) : type === "phone" ? (
+                                <input
+                                    ref={inputRef}
+                                    type="tel"
+                                    name="login"
+                                    value={formData.login}
+                                    onChange={handlePhoneChange}
+                                    className="phone-input act"
+                                    placeholder='+998 (__) ___-__-__'
+                                />
+                            ) : null}
                             {errors.login && <span className="error-text">{errors.login}</span>}
                         </div>
                         <div className="input-row">

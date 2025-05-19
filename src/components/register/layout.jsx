@@ -272,6 +272,8 @@ const Signup = () => {
         }
     };
 
+    const [resLoading, setResLoading] = useState(false);
+
     const handleResendCode = async () => {
         if (!canResend) return;
         if (!validatePhone(phone)) {
@@ -287,7 +289,7 @@ const Signup = () => {
             setErrors(prev => ({ ...prev, phone: "Iltimos, to'g'ri telefon raqamni kiriting!" }));
             return;
         }
-        setLoading(true);
+        setResLoading(true);
         setSmsLimitError(""); // Xatoliklarni tozalash
         try {
             const res = await fetch(`/site/send-sms/`, {
@@ -309,7 +311,7 @@ const Signup = () => {
         } catch (error) {
             setSmsLimitError("Tarmoq xatosi!");
         } finally {
-            setLoading(false);
+            setResLoading(false);
         }
     };
 
@@ -489,7 +491,7 @@ const Signup = () => {
                                 ))}
                             </div>
 
-                            {smsErr && <p className="error-text" >{smsErr}</p>}
+                            {smsErr && <span className="error-text al">{smsErr}</span>}
                             {/* Yangilangan resend section */}
                             <div className={`resend-section `}>
                                 <p className={`countdown-text`}>
@@ -505,17 +507,17 @@ const Signup = () => {
                                         disabled={loading}
                                         className={`resend-btn n`}
                                     >
-                                        Kodni qayta yuborish
+                                        {resLoading ? "Kod yuborilmoqda..." : "Kodni qayta yuborish"}
                                     </button>
                                 )}
                             </div>
 
                             <div className={`input-row`} style={{ flexDirection: "row" }}>
-                                <button className="n" type="button" id="back" onClick={() => setStep(1)} >
+                                <button className="n fons-sm" type="button" id="back" onClick={() => setStep(1)} >
                                     Ortga
                                 </button>
                                 <button
-                                    className="n"
+                                    className="n fons-sm"
                                     disabled={loading}
                                     onClick={verifyCode}
                                 >
@@ -536,7 +538,7 @@ const Signup = () => {
                                         value={formData.name}
                                         onChange={handleChange}
                                     />
-                                    {errors.name && <span className={`error `}>{errors.name}</span>}
+                                    {errors.name && <span className={`error-text `}>{errors.name}</span>}
                                 </div>
                                 <div className={`input-row ${errors.surname ? "err-border" : ""} `}>
                                     <input
@@ -546,7 +548,7 @@ const Signup = () => {
                                         value={formData.surname}
                                         onChange={handleChange}
                                     />
-                                    {errors.surname && <span className={`error `}>{errors.surname}</span>}
+                                    {errors.surname && <span className={`error-text `}>{errors.surname}</span>}
                                 </div>
                                 <div className={`input-row ${errors.username ? "err-border" : ""}`}>
                                     <input
@@ -556,7 +558,7 @@ const Signup = () => {
                                         value={formData.username}
                                         onChange={handleChange}
                                     />
-                                    {errors.username && <span className={`error`}>{errors.username}</span>}
+                                    {errors.username && <span className={`error-text`}>{errors.username}</span>}
                                 </div>
                                 {/* <div className={`input-row ${errors.age ? "err-border" : ""}`}>
                                 <InputMask
@@ -568,7 +570,7 @@ const Signup = () => {
                                 >
                                     {(inputProps) => <input {...inputProps} type="text" />}
                                 </InputMask>
-                                {errors.age && <span className={`error `}>{errors.age}</span>}
+                                {errors.age && <span className={`error-text `}>{errors.age}</span>}
                             </div> */}
                                 <div className={`input-row ${errors.age ? "err-border" : ""}`}>
                                     <input
@@ -616,7 +618,7 @@ const Signup = () => {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.region && <span className={`error `}>{errors.region}</span>}
+                                    {errors.region && <span className={`error-text `}>{errors.region}</span>}
                                 </div>
                                 <div className={`input-row ${errors.district ? "err-border" : ""} `}>
                                     <select
@@ -633,7 +635,7 @@ const Signup = () => {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.district && <span className={`error`}>{errors.district}</span>}
+                                    {errors.district && <span className={`error-text`}>{errors.district}</span>}
                                 </div>
                                 <div className={`input-row ${errors.password ? "err-border" : ""} `}>
                                     <input
@@ -643,7 +645,7 @@ const Signup = () => {
                                         value={formData.password}
                                         onChange={handleChange}
                                     />
-                                    {errors.password && <span className={`error `}>{errors.password}</span>}
+                                    {errors.password && <span className={`error-text `}>{errors.password}</span>}
                                 </div>
                                 <div className={`input-row ${errors.confirmPassword ? "err-border" : ""} `}>
                                     <input
@@ -654,7 +656,7 @@ const Signup = () => {
                                         onChange={handleChange}
                                     />
                                     {errors.confirmPassword && (
-                                        <span className={`error`}>{errors.confirmPassword}</span>
+                                        <span className={`error-text`}>{errors.confirmPassword}</span>
                                     )}
                                 </div>
                             </div>

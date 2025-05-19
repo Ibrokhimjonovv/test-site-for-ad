@@ -248,7 +248,7 @@
                         left: 0;
                         content: "";
                         position: fixed;
-                        z-index: 99;
+                        z-index: 99999999;
                     }
 
                     .opened-modal {
@@ -263,7 +263,7 @@
                         z-index: -9;
 
                         &.active {
-                            z-index: 100;
+                            z-index: 1000;
                             opacity: 1;
                             transform: translate(-50%, -50%);
                         }

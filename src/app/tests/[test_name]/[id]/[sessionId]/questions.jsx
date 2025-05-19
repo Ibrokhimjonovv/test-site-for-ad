@@ -154,21 +154,21 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
 
     // Question navigation
     const handleNextQuestion = () => {
-    // Tanlangan variantni tekshirish sharti olib tashlandi
-    if (selectedOption === questions[currentQuestionIndex].correctAnswer) {
-        setScore(prev => prev + 1);
-    }
+        // Tanlangan variantni tekshirish sharti olib tashlandi
+        if (selectedOption === questions[currentQuestionIndex].correctAnswer) {
+            setScore(prev => prev + 1);
+        }
 
-    if (currentQuestionIndex < questions.length - 1) {
-        const nextQuestionIndex = currentQuestionIndex + 1;
-        setCurrentQuestionIndex(nextQuestionIndex);
-        setSelectedOption(
-            sessionManager.getSession(sessionId).answers[nextQuestionIndex] ?? null
-        );
-    } else {
-        finishTest();
-    }
-};
+        if (currentQuestionIndex < questions.length - 1) {
+            const nextQuestionIndex = currentQuestionIndex + 1;
+            setCurrentQuestionIndex(nextQuestionIndex);
+            setSelectedOption(
+                sessionManager.getSession(sessionId).answers[nextQuestionIndex] ?? null
+            );
+        } else {
+            finishTest();
+        }
+    };
 
     const handlePrevQuestion = () => {
         if (currentQuestionIndex > 0) {
@@ -180,7 +180,7 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
         }
     };
 
-    
+
 
     const fixBrokenImageTags = (text) => {
         return text.replace(
@@ -369,7 +369,7 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
                                 }}
                                 ref={imageRef}
                             >
-                                {currentQuestion.question}
+                                {parse(renderQuestionText(currentQuestion.text))}
                             </div>
                         </div>
                     </div>
@@ -378,6 +378,15 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
             {/* Question container */}
             <div className="question-container">
                 <h3 className="question-text" onClick={toggleZoom}>
+                    <button
+                        className="zoom-button"
+                        onClick={toggleZoom}
+                        title="Zoom"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+                            <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z" />
+                        </svg>
+                    </button>
                     {parse(renderQuestionText(currentQuestion.text))}
                 </h3>
 
@@ -400,32 +409,33 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
 
                 {/* Navigation buttons */}
                 <div className="navigation-buttons">
-    <button
-        onClick={handlePrevQuestion}
-        disabled={currentQuestionIndex === 0} // Faqat birinchi savolda oldingi tugma disabled
-    >
-        Oldingi savol
-    </button>
+                    <button
+                        onClick={handlePrevQuestion}
+                        disabled={currentQuestionIndex === 0} // Faqat birinchi savolda oldingi tugma disabled
+                    >
+                        Oldingi savol
+                    </button>
 
-    {
-        currentQuestionIndex < questions.length - 1 ? (
-            <button
-                onClick={handleNextQuestion}
-                // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
-            >
-                Keyingi savol
-            </button>
-        ) : (
-            <button
-                onClick={finishTest}
-                // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
-                className="finish-button"
-            >
-                Testni yakunlash
-            </button>
-        )
-    }
-</div>
+                    {
+                        currentQuestionIndex < questions.length - 1 ? (
+                            <button
+                                onClick={handleNextQuestion}
+                            // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
+                            >
+                                Keyingi savol
+                            </button>
+                        ) : (
+                            <button
+                                onClick={finishTest}
+                                // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
+                                className="finish-button"
+                            >
+                                Testni yakunlash
+                            </button>
+                        )
+                    }
+                </div>
+                
             </div>
         </>
     )

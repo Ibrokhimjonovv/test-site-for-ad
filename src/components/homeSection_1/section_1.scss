@@ -59,3 +59,12 @@
     }
   }
 }
+
+@media screen and (max-width: 500px) {
+  .home_section_1 {
+    h1 {
+      font-size: 25px;
+      width: 343px;
+    }
+  }
+}

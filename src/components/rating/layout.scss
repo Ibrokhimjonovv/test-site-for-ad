@@ -108,6 +108,8 @@
 
         .ichi, .ni {
             width: 100%;
+            max-height: unset;
+            overflow: unset;
             
             .results-cont {
                 p {

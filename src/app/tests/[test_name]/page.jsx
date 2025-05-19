@@ -307,7 +307,7 @@ export default function TestsLayout() {
           </div>
         )}
       </div>
-  
+
       <Modal onClose={() => setShowModal(false)} showModal={showModal}>
         {selectedTest && (
           <div className="test-confirmation-modal">

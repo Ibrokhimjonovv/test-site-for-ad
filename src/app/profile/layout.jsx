@@ -180,21 +180,25 @@ const Profile = () => {
                     Chiqish
                   </button>
                   {mod && <div className={`m-shape`}></div>}
-                  <div className={`opened-modal ${mod ? "active" : ""}`}>
-                    <p >Haqiqatdan ham chiqmoqchimisiz?</p>
-                    <div >
-                      <button
-                        type="button"
-                        onClick={() => { setMod(false); }}
+                  {
+                    mod && (
+                      <div className={`opened-modal ${mod ? "active" : ""}`}>
+                        <p >Haqiqatdan ham chiqmoqchimisiz?</p>
+                        <div >
+                          <button
+                            type="button"
+                            onClick={() => { setMod(false); }}
 
-                      >
-                        Bekor qilish
-                      </button>
-                      <button type="button" onClick={handleLogout} >
-                        Chiqish
-                      </button>
-                    </div>
-                  </div>
+                          >
+                            Bekor qilish
+                          </button>
+                          <button type="button" onClick={handleLogout}>
+                            Chiqish
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  }
                 </div>
               </div>
             </div>
