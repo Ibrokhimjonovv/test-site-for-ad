@@ -159,7 +159,7 @@ export default function TestsLayout() {
         balance: prev.balance - selectedTest.price
       }));
 
-      const response = await fetch(`https://test.smartcoders.uz/api/start-test/`, {
+      const response = await fetch(`http://37.27.23.255:8899/api/start-test/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

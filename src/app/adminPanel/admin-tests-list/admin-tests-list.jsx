@@ -25,8 +25,8 @@ const TestsList = () => {
     const fetchData = async () => {
       try {
         const [testsResponse, departmentsResponse] = await Promise.all([
-          fetch(`https://test.smartcoders.uz/api/tests/`),
-          fetch(`https://test.smartcoders.uz/api/departments/`),
+          fetch(`http://37.27.23.255:8899/api/tests/`),
+          fetch(`http://37.27.23.255:8899/api/departments/`),
         ]);
         if (!testsResponse.ok || !departmentsResponse.ok) {
           throw new Error("Ma'lumotlarni yuklashda xato yuz berdi.");
@@ -47,7 +47,7 @@ const TestsList = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Bu testni o'chirishni istaysizmi?")) return;
     try {
-      const response = await fetch(`https://test.smartcoders.uz/api/tests/${id}/`, {
+      const response = await fetch(`http://37.27.23.255:8899/api/tests/${id}/`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -82,7 +82,7 @@ const TestsList = () => {
   };
   const handleSave = async () => {
     try {
-      const response = await fetch(`https://test.smartcoders.uz/api/tests/${editMode}/`, {
+      const response = await fetch(`http://37.27.23.255:8899/api/tests/${editMode}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -42,9 +42,9 @@ const CreateTest = () => {
     const fetchData = async () => {
       try {
         const [categoriesRes, departmentsRes, sciencesRes] = await Promise.all([
-          fetch(`https://test.smartcoders.uz/api/category/`),
-          fetch(`https://test.smartcoders.uz/api/departments/`),
-          fetch(`https://test.smartcoders.uz/api/sciences/`),
+          fetch(`http://37.27.23.255:8899/api/category/`),
+          fetch(`http://37.27.23.255:8899/api/departments/`),
+          fetch(`http://37.27.23.255:8899/api/sciences/`),
         ]);
 
         if (!categoriesRes.ok || !departmentsRes.ok || !sciencesRes.ok)
@@ -211,7 +211,7 @@ const CreateTest = () => {
     console.log("Yuborilayotgan ma'lumot:", JSON.stringify(requestBody, null, 2)); // Debug uchun
 
     try {
-      const response = await fetch(`https://test.smartcoders.uz/api/tests/`, {
+      const response = await fetch(`http://37.27.23.255:8899/api/tests/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

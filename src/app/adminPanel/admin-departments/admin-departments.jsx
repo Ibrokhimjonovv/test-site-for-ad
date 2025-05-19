@@ -26,7 +26,7 @@ const AdminDepartments = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sciencesResponse = await fetch(`https://test.smartcoders.uz/api/sciences/`);
+        const sciencesResponse = await fetch(`http://37.27.23.255:8899/api/sciences/`);
         if (!sciencesResponse.ok) {
           throw new Error("Fanlar ma'lumotini olishda xato yuz berdi.");
         }
@@ -34,7 +34,7 @@ const AdminDepartments = () => {
         setSciences(sciencesData);
         const subjectsWithDepartments = await Promise.all(
           sciencesData.map(async (science) => {
-            const departmentsResponse = await fetch(`https://test.smartcoders.uz/api/departments/`);
+            const departmentsResponse = await fetch(`http://37.27.23.255:8899/api/departments/`);
             if (!departmentsResponse.ok) {
               throw new Error(
                 `Bo'limlarni olishda xato yuz berdi (Fan ID: ${science.id}).`
@@ -65,8 +65,8 @@ const AdminDepartments = () => {
     e.preventDefault();
     try {
       const url = editingDepartment
-        ? `https://test.smartcoders.uz/api/departments/${editingDepartment.id}/`
-        : `https://test.smartcoders.uz/api/departments/`;
+        ? `http://37.27.23.255:8899/api/departments/${editingDepartment.id}/`
+        : `http://37.27.23.255:8899/api/departments/`;
       const method = editingDepartment ? "PUT" : "POST";
       const response = await fetch(url, {
         method,
@@ -118,7 +118,7 @@ const AdminDepartments = () => {
   };
   const handleDelete = async (departmentId) => {
     try {
-      const response = await fetch(`https://test.smartcoders.uz/api/departments/${departmentId}/`, {
+      const response = await fetch(`http://37.27.23.255:8899/api/departments/${departmentId}/`, {
         method: "DELETE",
       });
 

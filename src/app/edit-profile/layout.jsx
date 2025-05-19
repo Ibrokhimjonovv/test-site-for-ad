@@ -31,14 +31,12 @@ const Layout = () => {
     });
     const [success, setSuccess] = useState(false);
     const [token, setToken] = useState("");
-
     useEffect(() => {
         const access = localStorage.getItem("accessEdu");
         if (access) {
             setToken(access);
         }
     }, []);
-
     useEffect(() => {
         const fetchRegions = async () => {
             try {
@@ -53,11 +51,10 @@ const Layout = () => {
         };
         fetchRegions();
     }, []);
-
     useEffect(() => {
         const userProfile = async () => {
             try {
-                const response = await fetch(`https://test.smartcoders.uz/api/user-profile/`, {
+                const response = await fetch(`http://37.27.23.255:8899/api/user-profile/`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -88,7 +85,6 @@ const Layout = () => {
         };
         userProfile();
     }, []);
-
     const fetchDistricts = async (regionId) => {
         try {
             const response = await fetch(districtsURL);
@@ -103,18 +99,15 @@ const Layout = () => {
             console.error("Error:", error);
         }
     };
-
     const handleRegionChange = (event) => {
         const selectedRegionId = event.target.value;
         setSelectedRegion(selectedRegionId);
         fetchDistricts(selectedRegionId);
         setSelectedDistrict("");
     };
-
     const handleDistrictChange = (event) => {
         setSelectedDistrict(event.target.value);
     };
-
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData({
@@ -122,7 +115,6 @@ const Layout = () => {
             [name]: value,
         });
     };
-
     const validateDate = (date) => {
         const regex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
         const match = date.match(regex);
@@ -137,7 +129,6 @@ const Layout = () => {
         if (year < 1900 || year > currentYear) return (currentYear) => `Yil 1900 va ${currentYear} oralig'ida bo'lishi kerak!`;
         return "";
     };
-
     const validateForm = () => {
         let errors = {};
         if (!formData.name.trim()) errors.name = "Ism maydonini to'ldirish shart!";
@@ -158,7 +149,6 @@ const Layout = () => {
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!validateForm()) return;
@@ -175,7 +165,7 @@ const Layout = () => {
             if (!updatedData.password) {
                 delete updatedData.password;
             }
-            const response = await fetch(`https://test.smartcoders.uz/api/user-update/`, {
+            const response = await fetch(`http://37.27.23.255:8899/api/user-update/`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

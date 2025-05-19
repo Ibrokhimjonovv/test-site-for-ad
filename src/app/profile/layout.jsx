@@ -20,62 +20,25 @@ const Profile = () => {
     profileLoading,
     allUsers, setProfileData, setProfileLoading
   } = useContext(AccessContext);
-
   const [mod, setMod] = useState(false);
-
   const nav = useRouter()
-
-  const friends = [
-    {
-      image: defaultImage.src,
-      firstName: "Maqsadbek",
-      username: "Impulse",
-      percent: 96,
-    },
-    {
-      image: defaultImage.src,
-      firstName: "Jasur",
-      username: "NewJasJan",
-      percent: 76,
-    },
-    {
-      image: defaultImage.src,
-      firstName: "Izzatillo",
-      username: "Developer  ",
-      percent: 82,
-    },
-    {
-      image: defaultImage.src,
-      firstName: "Izzatillo",
-      username: "Developer",
-      percent: 52,
-    },
-  ];
-
   const [userRank, setUserRank] = useState(null);
-
-
   useEffect(() => {
-    fetch(`https://test.smartcoders.uz/api/user_rank/${profileData?.id}/`)
+    fetch(`http://37.27.23.255:8899/api/user_rank/${profileData?.id}/`)
       .then(response => response.json())
       .then(data => {
         setUserRank(data);
       })
       .catch(error => {
         console.log("");
-        // console.error('Error fetching user rank:', error);  
       });
   }, [profileData?.id]);
-
-
   if (profileLoading) {
     return <Loading />;
   }
-
   if (!profileData) {
     return <NotFound />
   }
-
   const handleLogout = () => {
     localStorage.removeItem("accessEdu");
     localStorage.removeItem("refreshEdu");
@@ -85,7 +48,6 @@ const Profile = () => {
     setProfileLoading(false);
     nav.push('/')
   };
-
   return (
     <section id="profile-section" >
       <div className={`profile-container `}>
@@ -105,25 +67,6 @@ const Profile = () => {
             <div className={`left-inner-1 mob-ver`}>
               <StaticLayout />
             </div>
-            {/* <div className={`left-inner-2 mob-ver`}>
-              <div className={`your-friend`}>
-                <h1 >Reyting</h1>
-                <div className={`your-friends`}>
-                  {friends.map((item, index) => (
-                    <div key={index} className={`friend`}>
-                      <img src={item.image} alt={item.firstName} />
-                      <div className={`texts`}>
-                        <h2 >{item.firstName}</h2>
-                        <p >
-                          <span className={`username`}>{item.username}</span>
-                          <span className={`percent`}>{item.percent}%</span>
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div> */}
             <div className={`start-now mob-ver`}>
               <div className={`now-left`}>
                 Darajani oshirish
@@ -131,7 +74,6 @@ const Profile = () => {
               </div>
               <Link href="#" >Boshlash</Link>
             </div>
-
             <ComplatedTests id={profileData.id} />
           </div>
           <div className={`right`}>
@@ -143,14 +85,12 @@ const Profile = () => {
                       id="user-img"
                       src={profileData.image.src}
                       alt="Rasm yetib kelmadi"
-
                     />
                   ) : (
                     <img
                       id="user-img"
                       src={defaultImage.src}
                       alt="Rasm yetib kelmadi"
-
                     />
                   )}
                   <div className={`texts`}>
@@ -175,7 +115,6 @@ const Profile = () => {
                   <button
                     id="logout"
                     onClick={() => { setMod(true); }}
-
                   >
                     Chiqish
                   </button>
@@ -188,7 +127,6 @@ const Profile = () => {
                           <button
                             type="button"
                             onClick={() => { setMod(false); }}
-
                           >
                             Bekor qilish
                           </button>
@@ -202,26 +140,6 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-
-            {/* <div className={`left-inner-2`}>
-              <div className={`your-friend`}>
-                <h1 >Reyting</h1>
-                <div className={`your-friends`}>
-                  {friends.map((item, index) => (
-                    <div key={index} className={`friend`}>
-                      <img src={item.image} alt={item.firstName} />
-                      <div className={`texts`}>
-                        <h2 >{item.firstName}</h2>
-                        <p >
-                          <span className={`username`}>{item.username}</span>
-                          <span className={`percent`}>{item.percent}%</span>
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div> */}
             <div className={`start-now`}>
               <div className={`now-left`}>
                 Darajani oshirish
