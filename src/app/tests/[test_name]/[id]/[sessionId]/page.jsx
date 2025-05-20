@@ -11,6 +11,7 @@ import Results from './results';
 import { AccessContext } from '@/contexts/contexts';
 import Loading from '@/components/loading/layout';
 import NotFound from '@/app/not-found';
+import { api } from '@/config';
 
 // Session manager
 const sessionManager = {
@@ -95,7 +96,7 @@ export default function TestComponent() {
         setLoading(true);
 
         // 1. Fetch test title/details from first endpoint
-        // const testTitleRes = await fetch(`http://37.27.23.255:8899/api/tests_title/${testId}/`);
+        // const testTitleRes = await fetch(`${api}/api/tests_title/${testId}/`);
         // const testTitleData = await testTitleRes.json();
 
         // if (!testTitleRes.ok) {
@@ -103,7 +104,7 @@ export default function TestComponent() {
         // }
 
         // 2. Fetch test questions from second endpoint
-        const questionsRes = await fetch(`http://37.27.23.255:8899/api/tests/${testId}/`);
+        const questionsRes = await fetch(`${api}/api/tests/${testId}/`);
         const questionsData = await questionsRes.json();
 
 
@@ -305,7 +306,7 @@ export default function TestComponent() {
 
       // 5. API ga so'rovlar yuborish
       const [statsResponse, finishResponse] = await Promise.all([
-        fetch(`http://37.27.23.255:8899/api/statistics/`, {
+        fetch(`${api}/api/statistics/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -313,7 +314,7 @@ export default function TestComponent() {
           },
           body: JSON.stringify(resultData),
         }),
-        fetch(`http://37.27.23.255:8899/api/finish/${testId}/`, {
+        fetch(`${api}/api/finish/${testId}/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

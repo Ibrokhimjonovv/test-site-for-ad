@@ -16,6 +16,7 @@ import {
   Legend,
 } from "chart.js";
 import { AccessContext } from "@/contexts/contexts";
+import { api } from "@/config";
 
 ChartJS.register(
   LineElement,
@@ -46,7 +47,7 @@ const StaticLayout = () => {
   useEffect(() => {
     const fetchSciences = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8899/api/sciences/`);
+        const response = await fetch(`${api}/api/sciences/`);
         if (!response.ok) throw new Error("Fanlarni yuklashda xatolik!");
         const data = await response.json();
         setSciences(data);
@@ -60,7 +61,7 @@ const StaticLayout = () => {
   useEffect(() => {
     const fetchLoginActivity = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8899/api/user-profile/`, {
+        const response = await fetch(`${api}/api/user-profile/`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${tokenn}`,
@@ -121,7 +122,7 @@ const StaticLayout = () => {
     const fetchTestStats = async () => {
       try {
         const response = await fetch(
-          `http://37.27.23.255:8899/api/statistics/?user=${profileData.id}`
+          `${api}/api/statistics/?user=${profileData.id}`
         );
         if (!response.ok) throw new Error("Statistikani olishda xatolik!");
         const data = await response.json();

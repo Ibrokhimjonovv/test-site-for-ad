@@ -7,6 +7,7 @@ import deleteIcon from "../admin-sciences/delete.png";
 import Loading from "@/components/loading/layout";
 import NotFound from "@/app/not-found";
 import { AccessContext } from "@/contexts/contexts";
+import { api } from "@/config";
 
 const AdminDepartments = () => {
   const [subjects, setSubjects] = useState([]);
@@ -26,7 +27,7 @@ const AdminDepartments = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sciencesResponse = await fetch(`http://37.27.23.255:8899/api/sciences/`);
+        const sciencesResponse = await fetch(`${api}/api/sciences/`);
         if (!sciencesResponse.ok) {
           throw new Error("Fanlar ma'lumotini olishda xato yuz berdi.");
         }
@@ -34,7 +35,7 @@ const AdminDepartments = () => {
         setSciences(sciencesData);
         const subjectsWithDepartments = await Promise.all(
           sciencesData.map(async (science) => {
-            const departmentsResponse = await fetch(`http://37.27.23.255:8899/api/departments/`);
+            const departmentsResponse = await fetch(`${api}/api/departments/`);
             if (!departmentsResponse.ok) {
               throw new Error(
                 `Bo'limlarni olishda xato yuz berdi (Fan ID: ${science.id}).`
@@ -65,8 +66,8 @@ const AdminDepartments = () => {
     e.preventDefault();
     try {
       const url = editingDepartment
-        ? `http://37.27.23.255:8899/api/departments/${editingDepartment.id}/`
-        : `http://37.27.23.255:8899/api/departments/`;
+        ? `${api}/api/departments/${editingDepartment.id}/`
+        : `${api}/api/departments/`;
       const method = editingDepartment ? "PUT" : "POST";
       const response = await fetch(url, {
         method,
@@ -118,7 +119,7 @@ const AdminDepartments = () => {
   };
   const handleDelete = async (departmentId) => {
     try {
-      const response = await fetch(`http://37.27.23.255:8899/api/departments/${departmentId}/`, {
+      const response = await fetch(`${api}/api/departments/${departmentId}/`, {
         method: "DELETE",
       });
 

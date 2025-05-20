@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@/config";
 import { createContext, useEffect, useState } from "react";
 
 const AccessContext = createContext();
@@ -67,7 +68,7 @@ const AccessProvider = ({ children }) => {
     useEffect(() => {
         const users = async () => {
             try {
-                const response = await fetch(`http://37.27.23.255:8899/api/users_count/`, {
+                const response = await fetch(`${api}/api/users_count/`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

@@ -8,6 +8,7 @@ import Link from "next/link"
 import Loading from "@/components/loading/layout";
 import NotFound from "@/app/not-found";
 import { AccessContext } from "@/contexts/contexts";
+import { api } from "@/config";
 
 const AdminSciences = () => {
   const [subjects, setSubjects] = useState([]);
@@ -41,7 +42,7 @@ const AdminSciences = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sciencesResponse = await fetch(`http://37.27.23.255:8899/api/get_science_count/`);
+        const sciencesResponse = await fetch(`${api}/api/get_science_count/`);
         if (!sciencesResponse.ok) {
           throw new Error("Network error");
         }
@@ -70,8 +71,8 @@ const AdminSciences = () => {
       formData.append("difficulty", data.difficulty);
       if (file) formData.append("img", file);
       const url = updateId
-        ? `http://37.27.23.255:8899/api/sciences/${updateId}/`
-        : `http://37.27.23.255:8899/api/sciences/`;
+        ? `${api}/api/sciences/${updateId}/`
+        : `${api}/api/sciences/`;
       const method = updateId ? "PUT" : "POST";
       const response = await fetch(url, {
         method,
@@ -102,7 +103,7 @@ const AdminSciences = () => {
   };
   const postDelete = async (postId) => {
     try {
-      const response = await fetch(`http://37.27.23.255:8899/api/sciences/${postId}/`, {
+      const response = await fetch(`${api}/api/sciences/${postId}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${access}`,

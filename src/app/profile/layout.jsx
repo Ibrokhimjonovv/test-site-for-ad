@@ -12,6 +12,7 @@ import arrow_image from "@/assets/arrow-image.png";
 import ComplatedTests from "@/components/complated-tests/layout";
 import Loading from "@/components/loading/layout";
 import NotFound from "../not-found";
+import { api } from "@/config";
 
 
 const Profile = () => {
@@ -24,7 +25,7 @@ const Profile = () => {
   const nav = useRouter()
   const [userRank, setUserRank] = useState(null);
   useEffect(() => {
-    fetch(`http://37.27.23.255:8899/api/user_rank/${profileData?.id}/`)
+    fetch(`${api}/api/user_rank/${profileData?.id}/`)
       .then(response => response.json())
       .then(data => {
         setUserRank(data);

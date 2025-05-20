@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import "./layout.scss";
 import Link from 'next/link';
 import { AccessContext } from '@/contexts/contexts';
+import { api } from '@/config';
 
 function Modal({ children, onClose, showModal }) {
   return (
@@ -159,7 +160,7 @@ export default function TestsLayout() {
         balance: prev.balance - selectedTest.price
       }));
 
-      const response = await fetch(`http://37.27.23.255:8899/api/start-test/`, {
+      const response = await fetch(`${api}/api/start-test/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

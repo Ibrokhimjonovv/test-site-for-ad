@@ -5,6 +5,7 @@ import click from "@/assets/click.jpg";
 import payme from "@/assets/payme.jpg";
 import { AccessContext } from "@/contexts/contexts";
 import NotFound from "../not-found";
+import { api } from "@/config";
 
 const BalanceTopUp = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -63,7 +64,7 @@ const BalanceTopUp = () => {
 
     try {
       const userId = profileData.id;
-      const orderRes = await fetch(`http://37.27.23.255:8899/api/get_order_id/`, {
+      const orderRes = await fetch(`${api}/api/get_order_id/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId }),
@@ -79,7 +80,7 @@ const BalanceTopUp = () => {
       );
 
       const orderCreateRes = await fetch(
-        `http://37.27.23.255:8899/api/order/create/`,
+        `${api}/api/order/create/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

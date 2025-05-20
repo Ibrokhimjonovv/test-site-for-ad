@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import "./layout.scss";
 import click from "./click.jpg";
 import payme from "./payme.jpg";
+import { api } from "@/config";
 
 const BalanceTopUp = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +61,7 @@ const BalanceTopUp = ({ user }) => {
 
     try {
       const userId = user.id;
-      const orderRes = await fetch(`http://37.27.23.255:8899/api/get_order_id/`, {
+      const orderRes = await fetch(`${api}/api/get_order_id/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId }),
@@ -70,8 +71,8 @@ const BalanceTopUp = ({ user }) => {
 
       const paymentAPI =
         paymentMethod === "payme"
-          ? `http://37.27.23.255:8899/api/order/create/`
-          : "http://37.27.23.255:8899/pyclick/process/click/transaction/create/";
+          ? `${api}/api/order/create/`
+          : "${api}/pyclick/process/click/transaction/create/";
 
       const requestBody =
         paymentMethod === "payme"

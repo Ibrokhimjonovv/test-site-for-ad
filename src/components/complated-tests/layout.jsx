@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import "./layout.scss";
+import { api } from '@/config';
 
 const ComplatedTests = ({ id }) => {
     const [stats, setStats] = useState(null);
@@ -15,7 +16,7 @@ const ComplatedTests = ({ id }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://37.27.23.255:8899/api/user-statistics/?user_id=${id}`);
+                const response = await fetch(`${api}/api/user-statistics/?user_id=${id}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

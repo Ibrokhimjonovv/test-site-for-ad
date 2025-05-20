@@ -5,6 +5,7 @@ import "./layout.scss";
 import { useRouter } from "next/navigation";
 import { AccessContext } from "@/contexts/contexts";
 import { useMask } from '@react-input/mask';
+import { api } from "@/config";
 
 const regionsURL =
     "https://raw.githubusercontent.com/MIMAXUZ/uzbekistan-regions-data/master/JSON/regions.json";
@@ -54,7 +55,7 @@ const Layout = () => {
     useEffect(() => {
         const userProfile = async () => {
             try {
-                const response = await fetch(`http://37.27.23.255:8899/api/user-profile/`, {
+                const response = await fetch(`${api}/api/user-profile/`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -165,7 +166,7 @@ const Layout = () => {
             if (!updatedData.password) {
                 delete updatedData.password;
             }
-            const response = await fetch(`http://37.27.23.255:8899/api/user-update/`, {
+            const response = await fetch(`${api}/api/user-update/`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

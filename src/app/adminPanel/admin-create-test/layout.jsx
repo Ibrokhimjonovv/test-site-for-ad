@@ -8,6 +8,7 @@ import NotFound from "@/app/not-found";
 import { AccessContext } from "@/contexts/contexts";
 // import InputMask from "react-input-mask";
 import { useMask } from '@react-input/mask';
+import { api } from "@/config";
 const CreateTest = () => {
   const [categories, setCategories] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -42,9 +43,9 @@ const CreateTest = () => {
     const fetchData = async () => {
       try {
         const [categoriesRes, departmentsRes, sciencesRes] = await Promise.all([
-          fetch(`http://37.27.23.255:8899/api/category/`),
-          fetch(`http://37.27.23.255:8899/api/departments/`),
-          fetch(`http://37.27.23.255:8899/api/sciences/`),
+          fetch(`${api}/api/category/`),
+          fetch(`${api}/api/departments/`),
+          fetch(`${api}/api/sciences/`),
         ]);
 
         if (!categoriesRes.ok || !departmentsRes.ok || !sciencesRes.ok)
@@ -211,7 +212,7 @@ const CreateTest = () => {
     console.log("Yuborilayotgan ma'lumot:", JSON.stringify(requestBody, null, 2)); // Debug uchun
 
     try {
-      const response = await fetch(`http://37.27.23.255:8899/api/tests/`, {
+      const response = await fetch(`${api}/api/tests/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

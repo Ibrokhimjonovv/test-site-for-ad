@@ -5,6 +5,7 @@ import "./add-word.scss";
 import Loading from "@/components/loading/layout";
 import NotFound from "@/app/not-found";
 import { AccessContext } from "@/contexts/contexts";
+import { api } from "@/config";
 
 const AddFile = () => {
   // Word uchun state
@@ -28,7 +29,7 @@ const AddFile = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8899/api/departments/`);
+        const response = await fetch(`${api}/api/departments/`);
         if (!response.ok) throw new Error("Bo'limlarni yuklashda xato!");
         const data = await response.json();
         setDepartments(data);
@@ -43,7 +44,7 @@ const AddFile = () => {
   useEffect(() => {
     const fetchSciences = async () => {
       try {
-        const response = await fetch(`http://37.27.23.255:8899/api/sciences/`);
+        const response = await fetch(`${api}/api/sciences/`);
         if (!response.ok) throw new Error("Fanlarni yuklashda xato!");
         const data = await response.json();
         setSciences(data);
@@ -68,7 +69,7 @@ const AddFile = () => {
     formData.append("file", wordFile);
 
     try {
-      const response = await fetch(`http://37.27.23.255:8899/api/upload-word/`, {
+      const response = await fetch(`${api}/api/upload-word/`, {
         method: "POST",
         body: formData,
       });
@@ -96,7 +97,7 @@ const AddFile = () => {
     formData.append("file", zipFile);
 
     try {
-      const response = await fetch(`http://37.27.23.255:8899/api/upload-folder/`, {
+      const response = await fetch(`${api}/api/upload-folder/`, {
         method: "POST",
         body: formData,
       });
