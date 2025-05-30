@@ -263,7 +263,7 @@
                         z-index: -9;
 
                         &.active {
-                            z-index: 1000;
+                            z-index: 999999999;
                             opacity: 1;
                             transform: translate(-50%, -50%);
                         }
