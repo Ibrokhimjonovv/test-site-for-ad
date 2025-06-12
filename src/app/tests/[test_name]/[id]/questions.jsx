@@ -1,16 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react'
 import parse from "html-react-parser";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
-const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selectedOption, questions, setSelectedOption, sessionManager, sessionId, setScore, setCurrentQuestionIndex, setTestStatus, isZoomed, handleOptionSelect, finishTest }) => {
+const Questions = ({ 
+  toggleZoom, 
+  currentQuestionIndex, 
+  currentQuestion, 
+  selectedOption, 
+  questions, 
+  setSelectedOption, 
+  setScore, 
+  setCurrentQuestionIndex, 
+  setTestStatus, 
+  isZoomed, 
+  handleOptionSelect, 
+  finishTest 
+}) => {
     const [zoomLevel, setZoomLevel] = useState(1);
-
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const imageRef = useRef(null);
     const containerRef = useRef(null);
     const [initialDistance, setInitialDistance] = useState(null);
-
 
     const handleZoomIn = (e) => {
         e.stopPropagation();
@@ -47,7 +60,6 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
         }
     };
 
-    // Drag functionality
     const handleMouseDown = (e) => {
         if (zoomLevel > 1) {
             setIsDragging(true);
@@ -80,7 +92,6 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
         setIsDragging(false);
     };
 
-    // Touch functionality
     const handleTouchStart = (e) => {
         if (e.touches.length === 2) {
             const distance = Math.hypot(
@@ -151,20 +162,10 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
         }
     };
 
-
-    // Question navigation
     const handleNextQuestion = () => {
-        // Tanlangan variantni tekshirish sharti olib tashlandi
-        if (selectedOption === questions[currentQuestionIndex].correctAnswer) {
-            setScore(prev => prev + 1);
-        }
-
         if (currentQuestionIndex < questions.length - 1) {
-            const nextQuestionIndex = currentQuestionIndex + 1;
-            setCurrentQuestionIndex(nextQuestionIndex);
-            setSelectedOption(
-                sessionManager.getSession(sessionId).answers[nextQuestionIndex] ?? null
-            );
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setSelectedOption(null);
         } else {
             finishTest();
         }
@@ -172,15 +173,10 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
 
     const handlePrevQuestion = () => {
         if (currentQuestionIndex > 0) {
-            const prevQuestionIndex = currentQuestionIndex - 1;
-            setCurrentQuestionIndex(prevQuestionIndex);
-            setSelectedOption(
-                sessionManager.getSession(sessionId).answers[prevQuestionIndex] ?? null
-            );
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+            setSelectedOption(null);
         }
     };
-
-
 
     const fixBrokenImageTags = (text) => {
         return text.replace(
@@ -189,38 +185,27 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
         );
     };
 
-    // Timeout handler
-
     const renderQuestionText = (text) => {
         if (typeof text !== "string") return "";
 
-        const baseUrl = "https://edumark.uz";
-
-        // <img> teglarini vaqtincha saqlash uchun joy
+        const baseUrl = "http://37.27.23.255:2222";
         const imgPlaceholders = [];
         let imgIndex = 0;
 
-        // <img> teglarini vaqtincha almashtirish
         text = text.replace(/<img\s+[^>]*>/g, (match) => {
-            imgPlaceholders.push(match); // Tegni saqlash
-            return `@@IMG${imgIndex++}@@`; // Tegni vaqtincha almashtirish
+            imgPlaceholders.push(match);
+            return `@@IMG${imgIndex++}@@`;
         });
 
-        // Matematik formulalarni aniqlash va to'g'ri ko'rsatish
         const mathRegex =
             /\\frac\{.*?\}\{.*?\}|\\sum|\\sqrt|\\left|\\right|\\times|\\div|a\d|⍟/g;
         text = text.replace(mathRegex, (match) => {
             try {
-                // a2, a3 kabi ifodalarni a^2, a^3 ga o'zgartirish
                 if (match.startsWith("a")) {
                     return katex.renderToString(match.replace("a", "a^"), {
                         throwOnError: false,
                     });
                 }
-                // ⍟ belgisini KaTeXda to'g'ri ko'rsatish
-                // if (match === '⍟') {
-                //   return katex.renderToString('\\star', { throwOnError: false });
-                // }
                 return katex.renderToString(match, { throwOnError: false });
             } catch (error) {
                 console.error("KaTeX render error:", error);
@@ -228,63 +213,54 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
             }
         });
 
-        // <img> teglarini qayta joylashtirish
         text = text.replace(/@@IMG(\d+)@@/g, (match, index) => {
-            const imgTag = imgPlaceholders[Number(index)]; // Tegni olish
-            // Rasm manzilini to'g'rilash
+            const imgTag = imgPlaceholders[Number(index)];
             return imgTag.replace(
                 /<img\s+src=["'](\/media[^"']+)["']/g,
                 (match, path) => `<img src="${baseUrl}${path}" />`
             );
         });
 
-        // Noto'g'ri img taglarini to'g'rilash
         text = fixBrokenImageTags(text);
-
         return text;
     };
 
     const cleanText = (text) => {
         if (typeof text !== "string") return "";
-
-        // Matematik formulalarni aniqlash
         const mathRegex = /\$[^$]*\$|\\\([^\)]*\\\)|\\\[[^\]]*\\\]/g;
         let formulas = [];
         let index = 0;
 
-        // Formulalarni vaqtincha almashtirish
         text = text.replace(mathRegex, (match) => {
             formulas.push(match);
             return `__FORMULA_${index++}__`;
         });
 
-        // Formulalarni qayta joylashtirish
         formulas.forEach((formula, i) => {
             text = text.replace(`__FORMULA_${i}__`, formula);
         });
 
         return text;
     };
+
     const fixImageTags = (text) => {
         return text.replace(/<img([^>]+)>/g, (match, attributes) => {
-            // 'alt' va 'style' atributlarini olib tashlash
             attributes = attributes.replace(/\s*alt=["'][^"']*["']/g, "");
             attributes = attributes.replace(/\s*style=["'][^"']*["']/g, "");
             return `<img ${attributes} />`;
         });
     };
+
     const fixImageUrl = (text) => {
         if (typeof text !== "string") return "";
-        const baseUrl = "https://edumark.uz";
+        const baseUrl = "http://37.27.23.255:2222";
         return text.replace(
             /<img\s+([^>]*?)src=["'](\/media[^"']+)["']([^>]*)>/g,
             (match, before, path, after) => {
-                // `alt="QuestionImage"` va `style="..."` atributlarini olib tashlash
                 const cleanedBefore = before
-                    .replace(/\balt=["'][^"']*["']/g, "") // alt atributini olib tashlash
-                    .replace(/\bstyle=["'][^"']*["']/g, "") // style atributini olib tashlash
-                    .trim(); // Bo‘sh joylarni tozalash
-
+                    .replace(/\balt=["'][^"']*["']/g, "")
+                    .replace(/\bstyle=["'][^"']*["']/g, "")
+                    .trim();
                 return `<img ${cleanedBefore} src="${baseUrl}${path}" ${after}>`;
             }
         );
@@ -293,32 +269,25 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
     const renderMath = (text) => {
         if (typeof text !== "string") return "";
 
-        // <img> teglarini vaqtincha saqlash uchun joy
         const imgPlaceholders = [];
         let imgIndex = 0;
 
-        // <img> teglarini vaqtincha almashtirish
         text = text.replace(/<img\s+[^>]*>/g, (match) => {
-            imgPlaceholders.push(match); // Tegni saqlash
-            return `@@IMG${imgIndex++}@@`; // Tegni vaqtincha almashtirish
+            imgPlaceholders.push(match);
+            return `@@IMG${imgIndex++}@@`;
         });
 
-        // Matematik formulalarni aniqlash
         const mathRegex =
             /\\frac\{.*?\}\{.*?\}|\\sum|\\sqrt|\\left|\\right|\\times|\\div|a\d|⍟/g;
 
-        // Formulalarni ajratib, ularni KaTeX orqali ko'rsatish
         text = text.replace(mathRegex, (match) => {
             try {
-                // a2, a3 kabi ifodalarni a^2, a^3 ga o'zgartirish
                 if (match.startsWith('a')) {
                     return katex.renderToString(match.replace('a', 'a^'), { throwOnError: false });
                 }
-                // ⍟ belgisini KaTeXda to'g'ri ko'rsatish
                 if (match === '⍟') {
                     return katex.renderToString('\\star', { throwOnError: false });
                 }
-                // Boshqa matematik formulalarni render qilish
                 return katex.renderToString(match, { throwOnError: false });
             } catch (error) {
                 console.error("KaTeX render error:", error);
@@ -326,9 +295,8 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
             }
         });
 
-        // <img> teglarini qayta joylashtirish
         text = text.replace(/@@IMG(\d+)@@/g, (match, index) => {
-            return imgPlaceholders[Number(index)]; // Tegni qaytarish
+            return imgPlaceholders[Number(index)];
         });
 
         return text;
@@ -336,7 +304,6 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
 
     return (
         <>
-            {/* Zoom modal */}
             {isZoomed && (
                 <div className="zoom-modal" onClick={toggleZoom}>
                     <div
@@ -375,7 +342,6 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
                     </div>
                 </div>
             )}
-            {/* Question container */}
             <div className="question-container">
                 <h3 className="question-text" onClick={toggleZoom}>
                     <button
@@ -407,35 +373,27 @@ const Questions = ({ toggleZoom, currentQuestionIndex, currentQuestion, selected
                     ))}
                 </div>
 
-                {/* Navigation buttons */}
                 <div className="navigation-buttons">
                     <button
                         onClick={handlePrevQuestion}
-                        disabled={currentQuestionIndex === 0} // Faqat birinchi savolda oldingi tugma disabled
+                        disabled={currentQuestionIndex === 0}
                     >
                         Oldingi savol
                     </button>
 
-                    {
-                        currentQuestionIndex < questions.length - 1 ? (
-                            <button
-                                onClick={handleNextQuestion}
-                            // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
-                            >
-                                Keyingi savol
-                            </button>
-                        ) : (
-                            <button
-                                onClick={finishTest}
-                                // disabled={selectedOption === null} - Bu qatorni olib tashlaymiz
-                                className="finish-button"
-                            >
-                                Testni yakunlash
-                            </button>
-                        )
-                    }
+                    {currentQuestionIndex < questions.length - 1 ? (
+                        <button onClick={handleNextQuestion}>
+                            Keyingi savol
+                        </button>
+                    ) : (
+                        <button
+                            onClick={finishTest}
+                            className="finish-button"
+                        >
+                            Testni yakunlash
+                        </button>
+                    )}
                 </div>
-                
             </div>
         </>
     )

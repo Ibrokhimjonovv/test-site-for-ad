@@ -223,7 +223,7 @@ const StaticLayout = () => {
           }}
         />
       </div>
-      <div className={`for-width`}>
+      {/* <div className={`for-width`}>
         <div className={`calendar-heatmap`}>
           <div className={`year-filter`}>
             <label htmlFor="year-select" >Aktivlik yili</label>
@@ -268,7 +268,7 @@ const StaticLayout = () => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

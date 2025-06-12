@@ -64,34 +64,33 @@ const BalanceTopUp = () => {
 
     try {
       const userId = profileData.id;
-      const orderRes = await fetch(`${api}/api/get_order_id/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId }),
-      });
-      const orderData = await orderRes.json();
-      const orderId = orderData.order_id;
-      console.log(
-        parseInt(amount),
-        paymentMethod,
-        orderId,
-        profileData.name,
-        regions[0].name_uz
-      );
+      // const orderRes = await fetch(`${api}/api/get_order_id/`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ user_id: userId }),
+      // });
+      // const orderData = await orderRes.json();
+      // const orderId = orderData.order_id;
+      // console.log(
+      //   parseInt(amount),
+      //   paymentMethod,
+      //   orderId,
+      //   profileData.name,
+      //   regions[0].name_uz
+      // );
 
       const orderCreateRes = await fetch(
-        `${api}/api/order/create/`,
+        `${api}/order/create/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_name: profileData.name,
+            customer_name: profileData.first_name,
             address: regions[0]?.name_uz || "",
             total_cost: parseInt(amount),
             payment_method: paymentMethod,
             customer: userId,
-            order_id: orderId,
-
+            order_id: profileData.order_id,
           }),
         }
       );

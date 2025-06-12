@@ -18,9 +18,8 @@ const Login = () => {
         password: ''
     });
     const [loading, setLoading] = useState(false);
-    const { registerStat, setRegisterStat, setLoginStat, loginStat } = useContext(AccessContext);
+    const { registerStat, setRegisterStat, setLoginStat, loginStat, showNewNotification } = useContext(AccessContext);
     const router = useRouter();
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -98,10 +97,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         setLoading(true);
 
@@ -112,13 +108,11 @@ const Login = () => {
 
             const response = await fetch('/site/user/auth/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: username, // Tozalangan telefon raqam
+                    action: 'login',
+                    login: username,
                     password: formData.password,
-                    last_login: new Date().toISOString(),
                 })
             });
 
@@ -130,15 +124,22 @@ const Login = () => {
 
             localStorage.setItem('accessEdu', result.access);
             localStorage.setItem('refreshEdu', result.refresh);
+
+            // Show notification that will persist through reload
+            showNewNotification("Muvaffaqiyatli kirildi!", "success", {
+                persist: true,
+                reloadAfter: true // This will trigger page reload
+            });
+
+            // Don't need to call reload manually anymore
             setLoginStat(false);
             resteForm();
-            // setAccess(true);
-            window.location.reload()
 
         } catch (error) {
+            // showNewNotification(error.message || 'Xatolik yuz berdi', "error");
             setErrors(prev => ({
                 ...prev,
-                form: error.message || 'Xatolik yuz berdi' // Fixed error rendering
+                form: error.message || 'Xatolik yuz berdi'
             }));
         } finally {
             setLoading(false);

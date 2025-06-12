@@ -1,3 +1,38 @@
+.error-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .test-error-content {
+    width: 400px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
+    border: 2px solid #fe8a00;
+    border-radius: 15px;
+
+    button {
+      padding: 0 30px;
+      width: 100%;
+      border-radius: 12px;
+      border: 2px solid #fe8a00;
+      color: #fe8a00;
+      border-bottom-width: 4px;
+      height: 45px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: transparent;
+
+      &:active {
+        border-bottom-width: 2px;
+      }
+    }
+  }
+}
+
 .test-container {
   max-width: 1366px;
   margin: 0 auto;

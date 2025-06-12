@@ -30,13 +30,16 @@ export default function Tests() {
           throw new Error(result.error || 'Failed to fetch tests');
         }
 
-        const mappedData = result.data.map(category => ({
+        const mappedData = result.data.data.map(category => ({
           id: category.id,
-          testImage: category.category_img || "https://cdn.testbor.com/0/quiz-category/01JPMA7KTREH7RMB957PAQG926.png",
+          testImage: category.img || "https://cdn.testbor.com/0/quiz-category/01JPMA7KTREH7RMB957PAQG926.png",
           isNew: category.is_new || false,
-          testTitle: category.category_title,
+          testTitle: category.title,
           testCount: category.test_count > 0 ? `${category.test_count} ta test` : "Cheksiz testlar",
         }));
+
+        console.log(mappedData);
+        
 
         setTests(mappedData);
       } catch (error) {

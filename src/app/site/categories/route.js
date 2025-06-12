@@ -1,10 +1,10 @@
 // export const dynamic = 'force-dynamic'; 
 
 export async function GET() {
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://37.27.23.255:8899';
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://37.27.23.255:2222';
   
   try {
-    const response = await fetch(`${API_BASE}/api/category-test-count/`, {
+    const response = await fetch(`${API_BASE}/edu_maktablar/all_category/`, {
       headers: {
         'Content-Type': 'application/json'
       }

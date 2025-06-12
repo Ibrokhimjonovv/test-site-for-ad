@@ -13,67 +13,11 @@ import Loading from '@/components/loading/layout';
 import NotFound from '@/app/not-found';
 import { api } from '@/config';
 
-// Session manager
-const sessionManager = {
-  getAllSessions() {
-    return JSON.parse(localStorage.getItem('testSessions')) || {};
-  },
-
-  createSession(sessionId, testId) {
-    const sessions = this.getAllSessions();
-    const newSession = {
-      sessionId,
-      testId,
-      status: 'active',
-      startTime: new Date().toISOString(),
-      answers: {},
-      isValid: true
-    };
-    sessions[sessionId] = newSession;
-    localStorage.setItem('testSessions', JSON.stringify(sessions));
-    return newSession;
-  },
-
-  getSession(sessionId) {
-    const sessions = this.getAllSessions();
-    return sessions[sessionId] || null;
-  },
-
-  updateSession(sessionId, updates) {
-    const sessions = this.getAllSessions();
-    if (sessions[sessionId]) {
-      sessions[sessionId] = { ...sessions[sessionId], ...updates };
-      localStorage.setItem('testSessions', JSON.stringify(sessions));
-      return sessions[sessionId];
-    }
-    return null;
-  },
-
-  invalidateSession(sessionId) {
-    this.updateSession(sessionId, { isValid: false });
-  },
-
-  deleteSession(sessionId) {
-    const sessions = this.getAllSessions();
-    delete sessions[sessionId];
-    localStorage.setItem('testSessions', JSON.stringify(sessions));
-  },
-
-  validateSession(sessionId, testId) {
-    const session = this.getSession(sessionId);
-    if (!session) return false;
-    if (!session.isValid) return false;
-    if (session.status !== 'active') return false;
-    if (session.testId !== testId) return false;
-    return true;
-  }
-};
-
 export default function TestComponent() {
   const params = useParams();
-  const { id, sessionId } = params;
+  const { id } = params;
   const router = useRouter();
-  const testId = Number(id);
+  const testId = id;
 
   const [currentTest, setCurrentTest] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -89,35 +33,27 @@ export default function TestComponent() {
   const { profileData } = useContext(AccessContext);
   const [opTracker, setOpTracker] = useState(false);
 
-
   useEffect(() => {
     const fetchTestData = async () => {
       try {
         setLoading(true);
 
-        // 1. Fetch test title/details from first endpoint
-        // const testTitleRes = await fetch(`${api}/api/tests_title/${testId}/`);
-        // const testTitleData = await testTitleRes.json();
-
-        // if (!testTitleRes.ok) {
-        //   throw new Error('Failed to fetch test title');
-        // }
-
-        // 2. Fetch test questions from second endpoint
-        const questionsRes = await fetch(`${api}/api/tests/${testId}/`);
+        const questionsRes = await fetch(`${api}/edu_maktablar/test/${testId}/`);
         const questionsData = await questionsRes.json();
-
 
         if (!questionsRes.ok) {
           throw new Error('Failed to fetch questions');
         }
 
+        // Convert time from "HH:MM:SS" to minutes
+        const timeParts = questionsData.time.split(':');
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        const totalMinutes = (hours * 60) + minutes;
 
-        // 3. Prepare test data
         const testData = {
           id: testId,
-          // title: testTitleData.title || "Test",
-          testTime: questionsData.time_limit || 30, // Default to 30 minutes if not provided
+          testTime: totalMinutes || 30,
           science: questionsData.science || [],
           testTitle: questionsData.title,
         };
@@ -125,24 +61,30 @@ export default function TestComponent() {
         setCurrentTest(testData);
         setTimeLeft(testData.testTime * 60);
 
-        // 4. Prepare questions data
-        const formattedQuestions = questionsData.questions.map(q => ({
-          id: q.id,
-          text: q.text,
-          options: q.options.map((opt, idx) => ({
-            id: opt.id,
-            text: opt.text,
-            is_staff: opt.is_staff || false
-          })),
-          science_id: q.science_id,
-          science_name: q.science_name || "Science",
-          score: q.score || 1,
-          time: q.time || null
-        }));
+        // Convert questions_grouped_by_science object to array
+        const formattedQuestions = [];
+        for (const scienceName in questionsData.questions_grouped_by_science) {
+          const scienceQuestions = questionsData.questions_grouped_by_science[scienceName];
+          scienceQuestions.forEach((q, index) => {
+            formattedQuestions.push({
+              id: q.id,
+              text: q.text,
+              options: q.options.map((opt, idx) => ({
+                id: opt.id,
+                text: opt.text,
+                is_staff: opt.is_staff || false
+              })),
+              science_id: q.science_id,
+              science_name: scienceName, // Use the science name from the object key
+              score: q.score || 1,
+              time: q.time || null,
+              image: q.text.includes('<img') ? q.text.match(/src="([^"]*)"/)[1] : null
+            });
+          });
+        }
 
         setQuestions(formattedQuestions);
 
-        // 5. Prepare sciences data
         const uniqueScienceIds = [...new Set(formattedQuestions.map(q => q.science_id))];
         const formattedSciences = uniqueScienceIds.map(id => ({
           id,
@@ -154,33 +96,14 @@ export default function TestComponent() {
 
       } catch (error) {
         console.error('Error fetching test data:', error);
-        router.push('/tests/all');
+        // router.push('/tests/all');
       } finally {
         setLoading(false);
       }
     };
 
-    const initializeSession = () => {
-      let session = sessionManager.getSession(sessionId);
-
-      if (!session) {
-        session = sessionManager.createSession(sessionId, testId);
-      } else if (!sessionManager.validateSession(sessionId, testId)) {
-        router.push('/tests/all');
-        return;
-      }
-
-      if (session.answers && Object.keys(session.answers).length > 0) {
-        const answers = session.answers;
-        const lastQuestionIndex = Math.max(...Object.keys(answers).map(Number));
-        setCurrentQuestionIndex(lastQuestionIndex);
-        setSelectedOption(answers[lastQuestionIndex]);
-      }
-    };
-
     fetchTestData();
-    initializeSession();
-  }, [testId, sessionId, router]);
+  }, [testId, router]);
 
   const toggleZoom = () => {
     setIsZoomed(!isZoomed);
@@ -203,23 +126,14 @@ export default function TestComponent() {
   };
 
   const handleTimeout = () => {
-    const session = sessionManager.getSession(sessionId);
     let finalScore = 0;
 
     questions.forEach((question, index) => {
-      const userAnswerId = session?.answers?.[index];
+      const userAnswerId = selectedAnswers[index];
       const correctOption = question.options.find(opt => opt.is_staff);
       if (userAnswerId && correctOption && userAnswerId === correctOption.id) {
         finalScore++;
       }
-    });
-
-    sessionManager.updateSession(sessionId, {
-      status: 'timeout',
-      endTime: new Date().toISOString(),
-      isValid: false,
-      score: finalScore,
-      totalQuestions: questions.length
     });
 
     setScore(finalScore);
@@ -232,12 +146,6 @@ export default function TestComponent() {
       ...prev,
       [currentQuestionIndex]: optionId
     }));
-    sessionManager.updateSession(sessionId, {
-      answers: {
-        ...sessionManager.getSession(sessionId).answers,
-        [currentQuestionIndex]: optionId
-      }
-    });
   };
 
   if (loading) {
@@ -249,122 +157,126 @@ export default function TestComponent() {
   }
 
   if (!currentTest) {
-    return <div className="error-container">Test topilmadi</div>;
+    return <div className="error-container">
+      <div className="test-error-content">
+        <h2>Test topilmadi!</h2>
+        <button onClick={() => router.push('/tests/all/')}>Ortga qaytish</button>
+      </div>
+    </div>;
   }
 
   if (testStatus === 'completed' || testStatus === 'timeout') {
-    const session = sessionManager.getSession(sessionId);
-    return <Results questions={questions} session={session} testStatus={testStatus} score={score} sessionId={sessionId} sessionManager={sessionManager} />
+    return <Results
+      questions={questions}
+      testStatus={testStatus}
+      score={score}
+      selectedAnswers={selectedAnswers}
+    />
   }
 
-  // Test completion
   const finishTest = async () => {
-    try {
-      // 1. Session ma'lumotlarini olish va yakunlash
-      let finalScore = 0;
-      const session = sessionManager.getSession(sessionId);
+  try {
+    let finalScore = 0;
 
-      // To'g'ri javoblarni hisoblash
-      questions.forEach((question, index) => {
-        const userAnswerId = session?.answers?.[index];
-        const correctOption = question.options.find(opt => opt.is_staff);
-        if (userAnswerId && correctOption && userAnswerId === correctOption.id) {
-          finalScore++;
-        }
-      });
-
-      // 2. Vaqt hisoblarini amalga oshirish
-      const currentTime = new Date();
-      const startTime = new Date(session.startTime);
-      const totalTimeTaken = Math.floor((currentTime - startTime) / 1000);
-      const totalMinutes = String(Math.floor(totalTimeTaken / 60)).padStart(2, "0");
-      const totalSeconds = String(totalTimeTaken % 60).padStart(2, "0");
-      const formattedTime = `${Math.floor(totalTimeTaken / 60)} daqiqa ${totalTimeTaken % 60} soniya`;
-
-      // 3. Javoblar ma'lumotlarini tayyorlash
-      const answersData = Object.entries(session.answers || {}).map(([index, answerId]) => {
-        const question = questions[index];
-        return {
-          question_id: question.id,
-          selected_option_id: answerId,
-        };
-      });
-
-      // 4. Natijalar obyektini tuzish
-      const resultData = {
-        user: profileData?.id,
-        test_title: currentTest?.title || "Test",
-        correct_answers: finalScore,
-        incorrect_answers: questions.length - finalScore,
-        unanswered_questions: questions.length - Object.keys(session.answers || {}).length,
-        total_questions: questions.length,
-        percentage_correct: ((finalScore / questions.length) * 100).toFixed(2),
-        total_time_taken: `00:${totalMinutes}:${totalSeconds}`,
-        time_taken: formattedTime,
-        time_per_question: { 1: 1 }, // Default
-      };
-
-      // 5. API ga so'rovlar yuborish
-      const [statsResponse, finishResponse] = await Promise.all([
-        fetch(`${api}/api/statistics/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
-          },
-          body: JSON.stringify(resultData),
-        }),
-        fetch(`${api}/api/finish/${testId}/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
-          },
-          body: JSON.stringify({ answers: answersData }),
-        })
-      ]);
-
-      if (!statsResponse.ok || !finishResponse.ok) {
-        throw new Error("Natijalarni saqlashda xato yuz berdi");
+    // Prepare answers data with validation
+    const answersData = [];
+    const validatedAnswers = {};
+    
+    // First validate all answers
+    for (const [index, answerId] of Object.entries(selectedAnswers)) {
+      const questionIndex = parseInt(index);
+      const question = questions[questionIndex];
+      
+      if (!question) {
+        console.error(`Question not found at index ${questionIndex}`);
+        continue;
       }
-
-      const finishData = await finishResponse.json();
-
-      // 6. Sessionni yangilash va state ni o'zgartirish
-      sessionManager.updateSession(sessionId, {
-        status: 'completed',
-        endTime: currentTime.toISOString(),
-        isValid: false,
-        score: finalScore,
-        totalQuestions: questions.length,
-        resultData: finishData
+      
+      const selectedOption = question.options.find(opt => opt.id === answerId);
+      if (!selectedOption) {
+        console.error(`Option ${answerId} not found in question ${question.id}`);
+        continue;
+      }
+      
+      // Count correct answers
+      const correctOption = question.options.find(opt => opt.is_staff);
+      if (correctOption && answerId === correctOption.id) {
+        finalScore++;
+      }
+      
+      // Add to validated answers
+      answersData.push({
+        question_id: question.id,
+        selected_option_id: answerId,
       });
-
-      setScore(finalScore);
-      setTestStatus('completed');
-
-      // 7. Qo'shimcha ma'lumotlarni saqlash
-      // setResults({
-      //   ...resultData,
-      //   total_score: finishData.total_score,
-      //   ai_text: finishData.result
-      // });
-
-    } catch (error) {
-      console.error("Testni yakunlashda xato:", error);
-      // Xatolikni foydalanuvchiga ko'rsatish
-      alert("Testni yakunlashda xato yuz berdi. Iltimos, qayta urunib ko'ring.");
-    } finally {
-      // 8. Tozalash ishlari
-      // localStorage.removeItem("startTest");
-      // localStorage.removeItem("startTime");
-      // localStorage.removeItem("questionStartTime");
-      // localStorage.removeItem("timePerQuestion");
+      
+      validatedAnswers[questionIndex] = answerId;
     }
-  };
 
+    // Calculate time metrics
+    const totalTimeTaken = currentTest.testTime * 60 - timeLeft;
+    const timePerQuestion = totalTimeTaken / questions.length;
 
+    // Prepare statistics data
+    const resultData = {
+      user: profileData?.id,
+      test_title: currentTest?.title || "Test",
+      correct_answers: finalScore,
+      incorrect_answers: questions.length - finalScore,
+      unanswered_questions: questions.length - Object.keys(validatedAnswers).length,
+      total_questions: questions.length,
+      percentage_correct: ((finalScore / questions.length) * 100).toFixed(2),
+      total_time_taken: totalTimeTaken,
+      time_per_question: {1:1},
+    };
 
+    // Send requests
+    const [statsResponse, finishResponse] = await Promise.all([
+      fetch(`${api}/edu_maktablar/statistics/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
+        },
+        body: JSON.stringify(resultData),
+      }),
+      fetch(`${api}/edu_maktablar/finish/${testId}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
+        },
+        body: JSON.stringify({ 
+          answers: answersData,
+          user_id: profileData?.id 
+        }),
+      })
+    ]);
+
+    // Handle responses
+    if (!statsResponse.ok) {
+      const statsError = await statsResponse.json();
+      console.error("Statistics error:", statsError);
+      throw new Error("Natijalarni saqlashda xato yuz berdi");
+    }
+
+    if (!finishResponse.ok) {
+      const finishError = await finishResponse.json();
+      console.error("Finish error:", finishError);
+      throw new Error("Testni yakunlashda xato yuz berdi");
+    }
+
+    const finishResult = await finishResponse.json();
+    console.log("Finish result:", finishResult);
+
+    setScore(finalScore);
+    setTestStatus('completed');
+
+  } catch (error) {
+    console.error("Testni yakunlashda xato:", error);
+    alert(`Testni yakunlashda xato yuz berdi: ${error.message}`);
+  }
+};
 
   if (questions.length === 0) {
     return (
@@ -392,7 +304,6 @@ export default function TestComponent() {
         setTestStatus={setTestStatus}
         selectedOption={selectedOption}
         finishTest={finishTest}
-        sessionId={sessionId}
       />
 
       <div className="all-questions">
@@ -421,8 +332,6 @@ export default function TestComponent() {
           selectedOption={selectedOption}
           questions={questions}
           setSelectedOption={setSelectedOption}
-          sessionManager={sessionManager}
-          sessionId={sessionId}
           setScore={setScore}
           setCurrentQuestionIndex={setCurrentQuestionIndex}
           setTestStatus={setTestStatus}
@@ -435,6 +344,7 @@ export default function TestComponent() {
     </div>
   );
 }
+
 const ProgressTracker = ({
   test = {},
   selectedAnswers = {},
@@ -444,14 +354,12 @@ const ProgressTracker = ({
   sciences = [],
   opener, setOpener
 }) => {
-  // Safely extract science IDs and questions
   const scienceIds = Array.isArray(test.science) ? test.science : [];
   const questions = Array.isArray(test.questions) ? test.questions : [];
 
   const groupQuestionsByScience = () => {
     const grouped = {};
 
-    // 1. First create groups for all sciences in the test
     scienceIds.forEach(scienceId => {
       const science = sciences.find(s => s.id === scienceId);
       if (science) {
@@ -464,22 +372,19 @@ const ProgressTracker = ({
       }
     });
 
-    // 2. Assign questions to their sciences while preserving original order
     questions.forEach((question, globalIndex) => {
       const scienceId = question.science_id;
       if (grouped[scienceId]) {
         grouped[scienceId].questions.push({
           ...question,
-          globalIndex // Preserve original position
+          globalIndex
         });
         grouped[scienceId].count++;
       }
     });
 
-    // 3. Sort science groups by question count (descending)
     const sortedGroups = Object.values(grouped).sort((a, b) => b.count - a.count);
 
-    // 4. Calculate global indices for each question
     let globalCounter = 0;
     const finalGroups = sortedGroups.map(group => {
       const questionsWithGlobalIndices = group.questions.map(q => ({
@@ -540,7 +445,6 @@ const ProgressTracker = ({
   };
 
   const scienceGroups = groupQuestionsByScience();
-
 
   return (
     <div className={`progress-tracker ${opener ? "act" : ""}`}>

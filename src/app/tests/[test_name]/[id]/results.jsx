@@ -2,15 +2,22 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import "./results.scss";
 import parse from "html-react-parser";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
-const Results = ({ testStatus, session, questions, score, sessionId, sessionManager }) => {
+const Results = ({ 
+  testStatus, 
+  questions, 
+  score, 
+  selectedAnswers 
+}) => {
     const router = useRouter();
 
-    // To'g'ri javoblarni hisoblash
+    // Calculate correct answers based on selectedAnswers
     const calculateScore = () => {
         let correctAnswers = 0;
         questions.forEach((question, index) => {
-            const userAnswerId = session?.answers?.[index];
+            const userAnswerId = selectedAnswers?.[index];
             const correctOption = question.options.find(opt => opt.is_staff);
             if (userAnswerId && correctOption && userAnswerId === correctOption.id) {
                 correctAnswers++;
@@ -26,38 +33,27 @@ const Results = ({ testStatus, session, questions, score, sessionId, sessionMana
         );
     };
 
-    // Timeout handler
-
     const renderQuestionText = (text) => {
         if (typeof text !== "string") return "";
 
-        const baseUrl = "https://edumark.uz";
-
-        // <img> teglarini vaqtincha saqlash uchun joy
+        const baseUrl = "http://37.27.23.255:2222";
         const imgPlaceholders = [];
         let imgIndex = 0;
 
-        // <img> teglarini vaqtincha almashtirish
         text = text.replace(/<img\s+[^>]*>/g, (match) => {
-            imgPlaceholders.push(match); // Tegni saqlash
-            return `@@IMG${imgIndex++}@@`; // Tegni vaqtincha almashtirish
+            imgPlaceholders.push(match);
+            return `@@IMG${imgIndex++}@@`;
         });
 
-        // Matematik formulalarni aniqlash va to'g'ri ko'rsatish
         const mathRegex =
             /\\frac\{.*?\}\{.*?\}|\\sum|\\sqrt|\\left|\\right|\\times|\\div|a\d|⍟/g;
         text = text.replace(mathRegex, (match) => {
             try {
-                // a2, a3 kabi ifodalarni a^2, a^3 ga o'zgartirish
                 if (match.startsWith("a")) {
                     return katex.renderToString(match.replace("a", "a^"), {
                         throwOnError: false,
                     });
                 }
-                // ⍟ belgisini KaTeXda to'g'ri ko'rsatish
-                // if (match === '⍟') {
-                //   return katex.renderToString('\\star', { throwOnError: false });
-                // }
                 return katex.renderToString(match, { throwOnError: false });
             } catch (error) {
                 console.error("KaTeX render error:", error);
@@ -65,63 +61,54 @@ const Results = ({ testStatus, session, questions, score, sessionId, sessionMana
             }
         });
 
-        // <img> teglarini qayta joylashtirish
         text = text.replace(/@@IMG(\d+)@@/g, (match, index) => {
-            const imgTag = imgPlaceholders[Number(index)]; // Tegni olish
-            // Rasm manzilini to'g'rilash
+            const imgTag = imgPlaceholders[Number(index)];
             return imgTag.replace(
                 /<img\s+src=["'](\/media[^"']+)["']/g,
                 (match, path) => `<img src="${baseUrl}${path}" />`
             );
         });
 
-        // Noto'g'ri img taglarini to'g'rilash
         text = fixBrokenImageTags(text);
-
         return text;
     };
 
     const cleanText = (text) => {
         if (typeof text !== "string") return "";
-
-        // Matematik formulalarni aniqlash
         const mathRegex = /\$[^$]*\$|\\\([^\)]*\\\)|\\\[[^\]]*\\\]/g;
         let formulas = [];
         let index = 0;
 
-        // Formulalarni vaqtincha almashtirish
         text = text.replace(mathRegex, (match) => {
             formulas.push(match);
             return `__FORMULA_${index++}__`;
         });
 
-        // Formulalarni qayta joylashtirish
         formulas.forEach((formula, i) => {
             text = text.replace(`__FORMULA_${i}__`, formula);
         });
 
         return text;
     };
+
     const fixImageTags = (text) => {
         return text.replace(/<img([^>]+)>/g, (match, attributes) => {
-            // 'alt' va 'style' atributlarini olib tashlash
             attributes = attributes.replace(/\s*alt=["'][^"']*["']/g, "");
             attributes = attributes.replace(/\s*style=["'][^"']*["']/g, "");
             return `<img ${attributes} />`;
         });
     };
+
     const fixImageUrl = (text) => {
         if (typeof text !== "string") return "";
-        const baseUrl = "https://edumark.uz";
+        const baseUrl = "http://37.27.23.255:2222";
         return text.replace(
             /<img\s+([^>]*?)src=["'](\/media[^"']+)["']([^>]*)>/g,
             (match, before, path, after) => {
-                // `alt="QuestionImage"` va `style="..."` atributlarini olib tashlash
                 const cleanedBefore = before
-                    .replace(/\balt=["'][^"']*["']/g, "") // alt atributini olib tashlash
-                    .replace(/\bstyle=["'][^"']*["']/g, "") // style atributini olib tashlash
-                    .trim(); // Bo‘sh joylarni tozalash
-
+                    .replace(/\balt=["'][^"']*["']/g, "")
+                    .replace(/\bstyle=["'][^"']*["']/g, "")
+                    .trim();
                 return `<img ${cleanedBefore} src="${baseUrl}${path}" ${after}>`;
             }
         );
@@ -130,32 +117,25 @@ const Results = ({ testStatus, session, questions, score, sessionId, sessionMana
     const renderMath = (text) => {
         if (typeof text !== "string") return "";
 
-        // <img> teglarini vaqtincha saqlash uchun joy
         const imgPlaceholders = [];
         let imgIndex = 0;
 
-        // <img> teglarini vaqtincha almashtirish
         text = text.replace(/<img\s+[^>]*>/g, (match) => {
-            imgPlaceholders.push(match); // Tegni saqlash
-            return `@@IMG${imgIndex++}@@`; // Tegni vaqtincha almashtirish
+            imgPlaceholders.push(match);
+            return `@@IMG${imgIndex++}@@`;
         });
 
-        // Matematik formulalarni aniqlash
         const mathRegex =
             /\\frac\{.*?\}\{.*?\}|\\sum|\\sqrt|\\left|\\right|\\times|\\div|a\d|⍟/g;
 
-        // Formulalarni ajratib, ularni KaTeX orqali ko'rsatish
         text = text.replace(mathRegex, (match) => {
             try {
-                // a2, a3 kabi ifodalarni a^2, a^3 ga o'zgartirish
                 if (match.startsWith('a')) {
                     return katex.renderToString(match.replace('a', 'a^'), { throwOnError: false });
                 }
-                // ⍟ belgisini KaTeXda to'g'ri ko'rsatish
                 if (match === '⍟') {
                     return katex.renderToString('\\star', { throwOnError: false });
                 }
-                // Boshqa matematik formulalarni render qilish
                 return katex.renderToString(match, { throwOnError: false });
             } catch (error) {
                 console.error("KaTeX render error:", error);
@@ -163,9 +143,8 @@ const Results = ({ testStatus, session, questions, score, sessionId, sessionMana
             }
         });
 
-        // <img> teglarini qayta joylashtirish
         text = text.replace(/@@IMG(\d+)@@/g, (match, index) => {
-            return imgPlaceholders[Number(index)]; // Tegni qaytarish
+            return imgPlaceholders[Number(index)];
         });
 
         return text;
@@ -184,7 +163,7 @@ const Results = ({ testStatus, session, questions, score, sessionId, sessionMana
                 <div className="answers-review">
                     <h3>Javoblaringizni ko'rib chiqing:</h3>
                     {questions.map((question, index) => {
-                        const userAnswerId = session?.answers?.[index];
+                        const userAnswerId = selectedAnswers?.[index];
                         const correctOption = question.options.find(opt => opt.is_staff);
                         const userOption = question.options.find(opt => opt.id === userAnswerId);
                         const isCorrect = correctOption?.id === userAnswerId;
@@ -200,10 +179,6 @@ const Results = ({ testStatus, session, questions, score, sessionId, sessionMana
                                     {question.options.map((option) => {
                                         let optionClass = '';
                                         const isCorrectOption = option.is_staff;
-                                        console.log(option);
-                                        
-                                        console.log(isCorrectOption);
-                                        
                                         const isUserAnswer = option.id === userAnswerId;
 
                                         if (hasAnswer) {
@@ -256,10 +231,7 @@ const Results = ({ testStatus, session, questions, score, sessionId, sessionMana
 
                 <button
                     className="return-button"
-                    onClick={() => {
-                        sessionManager.deleteSession(sessionId);
-                        router.push('/tests/all');
-                    }}
+                    onClick={() => router.push('/tests/all')}
                 >
                     Testlar ro'yxatiga qaytish
                 </button>

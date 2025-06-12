@@ -1,0 +1,83 @@
+.notification {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 10px 15px;
+  max-width: 400px;
+  background-color: #4cbc2a;
+  z-index: -99999999;
+  border-radius: 7px;
+  color: #fff;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.3s;
+
+  &.active {
+    z-index: 99999999;
+    opacity: 1;
+    transform: translateX(0);
+
+    .timing {
+      &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: "";
+        width: 0;
+        height: 100%;
+        background-color: #2f751a;
+        animation: fuckingtiming 5s infinite linear;
+
+        @keyframes fuckingtiming {
+          100% {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  .notification-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #fff;
+    color: #4cbc2a;
+    font-size: 16px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(45deg);
+    border: none;
+    cursor: pointer;
+  }
+
+  &.error {
+    background-color: #ff5122;
+
+    .notification-close {
+      color: #ff5122;
+    }
+  }
+
+  .little-title {
+    font-size: 14px;
+  }
+
+  .text {
+    margin-top: 5px;
+  }
+
+  .timing {
+    width: 100%;
+    height: 10px;
+    background-color: #fff;
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 5px;
+  }
+}

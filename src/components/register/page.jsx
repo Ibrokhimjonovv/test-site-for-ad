@@ -4,4 +4,4 @@ const Register = () => {
   return <Layout />
 }
 
-export default Register
+export default Register;

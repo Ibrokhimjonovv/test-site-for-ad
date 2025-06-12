@@ -1,5 +1,6 @@
 "use client";
 
+import Notification from "@/components/notification/layout";
 import { api } from "@/config";
 import { createContext, useEffect, useState } from "react";
 
@@ -65,34 +66,119 @@ const AccessProvider = ({ children }) => {
     const [allUsers, setAllUsers] = useState([]);
 
 
-    useEffect(() => {
-        const users = async () => {
-            try {
-                const response = await fetch(`${api}/api/users_count/`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
+    // useEffect(() => {
+    //     const users = async () => {
+    //         try {
+    //             const response = await fetch(`${api}/api/users_count/`, {
+    //                 method: "GET",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //             });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Tarmoq xatosi: ${response.status} - ${errorText}`);
+    //             if (!response.ok) {
+    //                 const errorText = await response.text();
+    //                 throw new Error(`Tarmoq xatosi: ${response.status} - ${errorText}`);
+    //             }
+
+    //             const data = await response.json();
+
+    //             // Ma'lumot obyekt yoki ro'yxat bo'lsa, setProfileData orqali holatga solamiz
+    //             setAllUsers(data);
+
+
+    //         } catch (error) {
+    //             console.error("Failed to fetch profile data:", error.message);
+    //         }
+    //     };
+
+    //     users();
+    // }, []);
+
+    const [notification, setNotification] = useState(null);
+    const [showNotification, setShowNotification] = useState(false);
+
+    // Combined notification function with reload support
+    const showNewNotification = (text, type, options = {}) => {
+        const { persist = false, reloadAfter = false } = options;
+        const newNotification = {
+            text,
+            type,
+            timestamp: Date.now()
+        };
+
+        // Show immediately
+        setNotification(newNotification);
+        setShowNotification(true);
+
+        // Persist to localStorage if needed
+        if (persist) {
+            localStorage.setItem('pendingNotification', JSON.stringify({
+                ...newNotification,
+                // Extended lifetime for reload cases
+                extendedLifetime: reloadAfter
+            }));
+        }
+
+        // Auto-hide after 5 seconds
+        const timer = setTimeout(() => {
+            setShowNotification(false);
+            setTimeout(() => {
+                setNotification(null);
+                if (!reloadAfter) {
+                    localStorage.removeItem('pendingNotification');
                 }
+            }, 300);
+        }, 5000);
 
-                const data = await response.json();
+        // Handle page reload if needed
+        if (reloadAfter) {
+            setTimeout(() => {
+                window.location.reload();
+            }, 100); // Small delay to ensure notification is stored
+        }
 
-                // Ma'lumot obyekt yoki ro'yxat bo'lsa, setProfileData orqali holatga solamiz
-                setAllUsers(data);
+        return () => clearTimeout(timer);
+    };
 
+    // Check for pending notifications on mount (with extended lifetime support)
+    useEffect(() => {
+        const checkForNotifications = () => {
+            const storedNotification = localStorage.getItem('pendingNotification');
+            if (storedNotification) {
+                const parsedNotification = JSON.parse(storedNotification);
 
-            } catch (error) {
-                console.error("Failed to fetch profile data:", error.message);
+                // Extended lifetime check (30 seconds for reload cases)
+                const maxAge = parsedNotification.extendedLifetime ? 30000 : 10000;
+
+                if (Date.now() - parsedNotification.timestamp < maxAge) {
+                    setNotification(parsedNotification);
+                    setShowNotification(true);
+
+                    // Auto-hide after remaining time
+                    const remainingTime = Math.max(
+                        1000,
+                        maxAge - (Date.now() - parsedNotification.timestamp)
+                    );
+
+                    setTimeout(() => {
+                        setShowNotification(false);
+                        setTimeout(() => {
+                            setNotification(null);
+                            localStorage.removeItem('pendingNotification');
+                        }, 300);
+                    }, remainingTime);
+                } else {
+                    localStorage.removeItem('pendingNotification');
+                }
             }
         };
 
-        users();
+        checkForNotifications();
+        window.addEventListener('popstate', checkForNotifications);
+        return () => window.removeEventListener('popstate', checkForNotifications);
     }, []);
+
 
     return (
         <AccessContext.Provider
@@ -101,10 +187,22 @@ const AccessProvider = ({ children }) => {
                 setLoginStat,
                 registerStat,
                 setRegisterStat,
-                profileData, setProfileData, allUsers, profileLoading, setProfileLoading
+                profileData, setProfileData, allUsers, profileLoading, setProfileLoading,
+                notification,
+                showNewNotification
             }}
         >
             {children}
+            <Notification
+                isActive={showNotification}
+                text={notification?.text}
+                type={notification?.type}
+                onClose={() => {
+                    setShowNotification(false);
+                    setNotification(null);
+                }}
+            />
+
         </AccessContext.Provider>
     );
 };

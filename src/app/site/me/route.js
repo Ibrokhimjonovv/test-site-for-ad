@@ -6,7 +6,6 @@ export async function GET(request) {
     
     try {
         const authHeader = request.headers.get('authorization');
-        console.log("Received auth header:", authHeader);
         
         if (!authHeader) {
             return NextResponse.json(
@@ -16,7 +15,7 @@ export async function GET(request) {
         }
 
         // Asl backend API manziliga so'rov
-        const backendResponse = await fetch(`${API_BASE}/api/user-profile/`, { // Bu ham frontenddagi bilan bir xil bo'lishi kerak
+        const backendResponse = await fetch(`${API_BASE}/user/profile/`, { // Bu ham frontenddagi bilan bir xil bo'lishi kerak
             headers: {
                 Authorization: authHeader, // Bearer bilan birga
                 "Content-Type": "application/json",

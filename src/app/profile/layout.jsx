@@ -49,6 +49,8 @@ const Profile = () => {
     setProfileLoading(false);
     nav.push('/')
   };
+  console.log(profileData);
+  
   return (
     <section id="profile-section" >
       <div className={`profile-container `}>
@@ -73,7 +75,7 @@ const Profile = () => {
                 Darajani oshirish
                 <img src={arrow_image.src} alt="" />
               </div>
-              <Link href="#" >Boshlash</Link>
+              <Link href="/tests/all">Boshlash</Link>
             </div>
             <ComplatedTests id={profileData.id} />
           </div>
@@ -96,7 +98,7 @@ const Profile = () => {
                   )}
                   <div className={`texts`}>
                     <h1 className={`first-last-name`}>
-                      {profileData.name || "Yuklanmoqda..."} {profileData.surname}
+                      {profileData.first_name || "Yuklanmoqda..."} {profileData.surname}
                     </h1>
                     <p className={`phone`}>{profileData.phone_number || "Yuklanmoqda..."}</p>
                     <p className={`username`}>{profileData.username}</p>

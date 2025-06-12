@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import "./layout.scss";
-import Link from 'next/link';
 import { AccessContext } from '@/contexts/contexts';
 import { api } from '@/config';
 
@@ -55,8 +54,9 @@ export default function TestsLayout() {
   const [categories, setCategories] = useState([]);
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { setLoginStat, profileData, setProfileData } = useContext(AccessContext)
+  const { setLoginStat, profileData, setProfileData, showNewNotification } = useContext(AccessContext)
   const [error, setError] = useState('')
+  const [stLoading, setStLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -66,19 +66,19 @@ export default function TestsLayout() {
         const categoriesData = await categoriesRes.json();
 
         // Safely handle categories data
-        const categoriesArray = Array.isArray(categoriesData?.data) ? categoriesData.data : [];
+        const categoriesArray = Array.isArray(categoriesData?.data.data) ? categoriesData.data.data : [];
         setCategories(categoriesArray);
+        
         // Fetch tests
         const testsRes = await fetch('/site/tests');
         const testsData = await testsRes.json();
 
         // Safely handle tests data
-        const testsArray = Array.isArray(testsData?.data?.tests) ? testsData.data.tests : [];
-        setTests({ tests: testsArray }); // Maintain consistent structure
+        const testsArray = Array.isArray(testsData?.data) ? testsData.data : [];
+        setTests({ tests: testsArray });
         setFilteredTests({ tests: testsArray });
       } catch (error) {
         console.error('Error fetching data:', error);
-        // Set empty arrays if there's an error
         setCategories([]);
         setTests({ tests: [] });
         setFilteredTests({ tests: [] });
@@ -119,11 +119,8 @@ export default function TestsLayout() {
   function handleCategoryClick(categoryId, category_title) {
     const formattedLink = formatCategoryLink(category_title);
     setActiveButton(formattedLink);
-
-    // Filter tests by category ID
     const filtered = tests.tests.filter(test => test.category === categoryId);
     setFilteredTests({ tests: filtered });
-
     router.push('/tests/' + formattedLink);
   }
 
@@ -144,14 +141,12 @@ export default function TestsLayout() {
       .replace(/[^\w-]/g, '');
   }
 
-  const [stLoading, setStLoading] = useState(false);
-
   const startTest = async () => {
     setStLoading(true);
     try {
       const token = localStorage.getItem("accessEdu");
       if (!token) {
-        alert("Token yo'q");
+        showNewNotification("Token yo'q", "error");
         return;
       }
 
@@ -160,7 +155,7 @@ export default function TestsLayout() {
         balance: prev.balance - selectedTest.price
       }));
 
-      const response = await fetch(`${api}/api/start-test/`, {
+      const response = await fetch(`${api}/edu_maktablar/start-test/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,29 +167,32 @@ export default function TestsLayout() {
       });
 
       if (response.ok) {
-        // localStorage.setItem("startTest", selectedTest.id);
-        // setStartTest(selectedTest.id);
-        const sessionId = crypto.randomUUID();
-        router.push(`/tests/${formatTestName(selectedTest.title)}/${selectedTest.id}/${sessionId}`);
-        setStLoading(false)
+        showNewNotification("Test muvaffaqiyatli boshlandi!", "success", true);
+        router.push(`/tests/${formatTestName(selectedTest.title)}/${selectedTest.id}`);
       } else {
+        const errorData = await response.json();
+        showNewNotification(
+          "Balansingizda mablag' yetarli emas!",
+          "error"
+        );
+
         setProfileData(prev => ({
           ...prev,
           balance: prev.balance + selectedTest.price
         }));
-        const errorData = await response.json();
         setError(errorData.detail);
-        setStLoading(false)
       }
     } catch (error) {
+      showNewNotification("Xatolik yuz berdi!", "error");
       setError(error);
+    } finally {
+      setStLoading(false);
     }
-  }
+  };
 
   function formatTestTime(timeString) {
     if (!timeString) return "Vaqt cheklanmagan";
 
-    // "HH:MM:SS" formatini tekshirish
     if (typeof timeString === 'string' && timeString.match(/^\d{1,2}:\d{2}:\d{2}$/)) {
       const [hours, minutes] = timeString.split(':').map(Number);
 
@@ -209,7 +207,6 @@ export default function TestsLayout() {
       }
     }
 
-    // Raqamli qiymatni tekshirish (daqikalarda)
     const timeNumber = Number(timeString);
     if (!isNaN(timeNumber)) {
       if (timeNumber <= 0) return "Vaqt cheklanmagan";
@@ -239,7 +236,6 @@ export default function TestsLayout() {
     );
   }
 
-
   return (
     <div className='tests-page'>
       <h1 className='page-title'>Testlar</h1>
@@ -252,14 +248,14 @@ export default function TestsLayout() {
         </button>
         {Array.isArray(categories) && categories.length > 0 ? (
           categories.map((category) => {
-            const formattedLink = formatCategoryLink(category.category_title);
+            const formattedLink = formatCategoryLink(category.title);
             return (
               <button
                 key={category.id}
                 className={activeButton === formattedLink ? 'active' : ''}
-                onClick={() => handleCategoryClick(category.id, category.category_title)}
+                onClick={() => handleCategoryClick(category.id, category.title)}
               >
-                {category.category_title}
+                {category.title}
                 {category.isNew && <div className="new active">Yangi</div>}
               </button>
             );
@@ -298,7 +294,7 @@ export default function TestsLayout() {
                   {test.price === 0 ? "Bepul" : `${test.price} UZS`}
                 </p>
                 <span></span>
-                {formatTestTime(test.time) || "0 daqiqa"}
+                {formatTestTime(test.time) || "0 daqiqa"}   
               </div>
             </div>
           ))
