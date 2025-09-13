@@ -20,6 +20,10 @@ export default function RootLayout({ children }) {
   return (
     <AccessProvider>
       <html lang="en">
+        <head>
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1980545331504061"
+     crossorigin="anonymous"></script>
+        </head>
         <body className={`${poppins.className} `}>
           <HeaderSwitcher />
           <Login />
