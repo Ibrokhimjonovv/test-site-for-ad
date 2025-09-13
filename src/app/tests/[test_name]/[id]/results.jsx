@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import "@/styles/results.scss";
+import "./results.scss";
 import parse from "html-react-parser";
 import katex from "katex";
 import "katex/dist/katex.min.css";
