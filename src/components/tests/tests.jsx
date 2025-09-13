@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import "./tests.scss";
 import TestsSkeleton from '../homeTestsComp/layout';
+import YandexAd from '../yandex-ad/ad';
 
 const formatCategoryLink = (title) => {
   return title?.toLowerCase().replace(/\s+/g, '-') || 'default';
@@ -82,6 +83,8 @@ export default function Tests() {
             );
           })}
         </div>
+
+        <YandexAd blockId="R-A-17225177-1"/>
       </div>
     </div>
   );
