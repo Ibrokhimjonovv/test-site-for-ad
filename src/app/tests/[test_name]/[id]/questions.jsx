@@ -378,19 +378,19 @@ const Questions = ({
                         onClick={handlePrevQuestion}
                         disabled={currentQuestionIndex === 0}
                     >
-                        Oldingi savol
+                        Previous Question
                     </button>
 
                     {currentQuestionIndex < questions.length - 1 ? (
                         <button onClick={handleNextQuestion}>
-                            Keyingi savol
+                            Next Question
                         </button>
                     ) : (
                         <button
                             onClick={finishTest}
                             className="finish-button"
                         >
-                            Testni yakunlash
+                            Finish Test
                         </button>
                     )}
                 </div>

@@ -51,10 +51,10 @@ const BalanceTopUp = ({ user }) => {
 
   const handlePayment = async () => {
     if (!amount || isNaN(amount) || amount <= 0) {
-      setError("Iltimos, to'g'ri summa kiriting!");
+      setError("Please enter a valid amount!");
       return;
     } else if (amount < 1000) {
-      setError("Minimal 1000 so'm kiriting!");
+      setError("Minimum amount is 1000 UZS!");
       return;
     }
     setShaxloading(true);
@@ -78,7 +78,7 @@ const BalanceTopUp = ({ user }) => {
         paymentMethod === "payme"
           ? {
               customer_name: user.name,
-              address: regions[0].name_uz,
+              address: regions[0].name_en,
               total_cost: parseInt(amount),
               payment_method: paymentMethod,
               customer: userId,
@@ -109,10 +109,10 @@ const BalanceTopUp = ({ user }) => {
       if (orderCreateData.payment_link) {
         window.location.href = orderCreateData.payment_link;
       } else {
-        setError("To'lov linkini olishda xatolik yuz berdi!");
+        setError("Error while getting payment link!");
       }
     } catch (error) {
-      setError("Xatolik yuz berdi, qayta urinib ko'ring!");
+      setError("An error occurred, please try again!");
       console.error("Payment error:", error);
     } finally {
       setShaxloading(false);
@@ -122,12 +122,12 @@ const BalanceTopUp = ({ user }) => {
   return (
     <div >
       <button onClick={() => setIsOpen(true)} >
-        Balansni oshirish
+        Increase Balance
       </button>
       <div className={`modal ${isOpen ? "active" : ""} `}>
         <div className={`modal-content `}>
           <h3 >
-            To'lov usulini tanlang: <span>{paymentMethod === "payme" ? "Payme" : "Click"}</span> orqali
+            Choose a payment method: <span>{paymentMethod === "payme" ? "Payme" : "Click"}</span>
           </h3>
           <div className={`payment-method `}>
             <button
@@ -140,13 +140,12 @@ const BalanceTopUp = ({ user }) => {
             <div id="inp-w-s" >
               <input
                 type="text"
-                placeholder="Summani kiriting (so'm)"
+                placeholder="Enter amount (UZS)"
                 name="total_cost"
                 value={formatAmount(amount)}
                 onChange={handleChange}
-                
               />
-              <span>so'm</span>
+              <span>UZS</span>
             </div>
             <p
               style={{
@@ -155,16 +154,15 @@ const BalanceTopUp = ({ user }) => {
                 margin: 0,
                 textAlign: "left",
               }}
-              
             >
               {error}
             </p>
             <div className={`modal-btn `}>
               <button onClick={() => setIsOpen(false)} >
-                Bekor qilish
+                Cancel
               </button>
               <button onClick={handlePayment} disabled={shaxLoading} >
-                {shaxLoading ? "To'lov qilinmoqda..." : "To'lov qilish"}
+                {shaxLoading ? "Processing payment..." : "Make Payment"}
               </button>
             </div>
           </div>

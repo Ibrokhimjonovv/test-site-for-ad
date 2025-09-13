@@ -24,6 +24,7 @@ const Profile = () => {
   const [mod, setMod] = useState(false);
   const nav = useRouter()
   const [userRank, setUserRank] = useState(null);
+
   useEffect(() => {
     fetch(`${api}/api/user_rank/${profileData?.id}/`)
       .then(response => response.json())
@@ -34,29 +35,29 @@ const Profile = () => {
         console.log("");
       });
   }, [profileData?.id]);
+
   if (profileLoading) {
     return <Loading />;
   }
   if (!profileData) {
     return <NotFound />
   }
+
   const handleLogout = () => {
     localStorage.removeItem("accessEdu");
     localStorage.removeItem("refreshEdu");
-
 
     setProfileData(null);
     setProfileLoading(false);
     nav.push('/')
   };
-  console.log(profileData);
-  
+
   return (
     <section id="profile-section" >
       <div className={`profile-container `}>
         <div className={`profile-header`}>
           <div className={`profile-header-inner`}>
-            <Link href="/" >Bosh sahifa</Link> / Shaxsiy kabinet
+            <Link href="/" >Home</Link> / Personal Cabinet
           </div>
         </div>
         <div className={`profile-content`}>
@@ -72,10 +73,10 @@ const Profile = () => {
             </div>
             <div className={`start-now mob-ver`}>
               <div className={`now-left`}>
-                Darajani oshirish
+                Increase Level
                 <img src={arrow_image.src} alt="" />
               </div>
-              <Link href="/tests/all">Boshlash</Link>
+              <Link href="/tests/all">Start</Link>
             </div>
             <ComplatedTests id={profileData.id} />
           </div>
@@ -87,20 +88,20 @@ const Profile = () => {
                     <img
                       id="user-img"
                       src={profileData.image.src}
-                      alt="Rasm yetib kelmadi"
+                      alt="Image not loaded"
                     />
                   ) : (
                     <img
                       id="user-img"
                       src={defaultImage.src}
-                      alt="Rasm yetib kelmadi"
+                      alt="Image not loaded"
                     />
                   )}
                   <div className={`texts`}>
                     <h1 className={`first-last-name`}>
-                      {profileData.first_name || "Yuklanmoqda..."} {profileData.surname}
+                      {profileData.first_name || "Loading..."} {profileData.surname}
                     </h1>
-                    <p className={`phone`}>{profileData.phone_number || "Yuklanmoqda..."}</p>
+                    <p className={`phone`}>{profileData.phone_number || "Loading..."}</p>
                     <p className={`username`}>{profileData.username}</p>
                   </div>
                 </div>
@@ -114,27 +115,27 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className={`logout-edit`}>
-                  <Link href="/edit-profile" >Profilni taxrirlash</Link>
+                  <Link href="/edit-profile" >Edit Profile</Link>
                   <button
                     id="logout"
                     onClick={() => { setMod(true); }}
                   >
-                    Chiqish
+                    Logout
                   </button>
                   {mod && <div className={`m-shape`}></div>}
                   {
                     mod && (
                       <div className={`opened-modal ${mod ? "active" : ""}`}>
-                        <p >Haqiqatdan ham chiqmoqchimisiz?</p>
+                        <p >Are you sure you want to logout?</p>
                         <div >
                           <button
                             type="button"
                             onClick={() => { setMod(false); }}
                           >
-                            Bekor qilish
+                            Cancel
                           </button>
                           <button type="button" onClick={handleLogout}>
-                            Chiqish
+                            Logout
                           </button>
                         </div>
                       </div>
@@ -145,10 +146,10 @@ const Profile = () => {
             </div>
             <div className={`start-now`}>
               <div className={`now-left`}>
-                Darajani oshirish
+                Increase Level
                 <img src={arrow_image.src} alt="" />
               </div>
-              <Link href="#">Boshlash</Link>
+              <Link href="#">Start</Link>
             </div>
           </div>
         </div>

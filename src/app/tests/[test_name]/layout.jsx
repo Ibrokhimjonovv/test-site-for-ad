@@ -1,6 +1,6 @@
 
 export const metadata = {
-  title: 'Testlar - Infinite Co',
+  title: 'Tests - м17',
 };
 
 export default function RootLayout({ children }) {

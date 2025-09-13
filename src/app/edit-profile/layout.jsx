@@ -119,34 +119,34 @@ const Layout = () => {
     const validateDate = (date) => {
         const regex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
         const match = date.match(regex);
-        if (!match) return "Tug'ilgan sana (DD.MM.YYYY)";
+        if (!match) return "Birthdate (DD.MM.YYYY)";
         let [_, day, month, year] = match;
         day = parseInt(day, 10);
         month = parseInt(month, 10);
         year = parseInt(year, 10);
         const currentYear = new Date().getFullYear();
-        if (day < 1 || day > 31) return "Kun faqat 01-31 oralig'ida bo'lishi kerak!";
-        if (month < 1 || month > 12) return "Oy faqat 01-12 oralig'ida bo'lishi kerak!";
-        if (year < 1900 || year > currentYear) return (currentYear) => `Yil 1900 va ${currentYear} oralig'ida bo'lishi kerak!`;
+        if (day < 1 || day > 31) return "Day must be between 01-31!";
+        if (month < 1 || month > 12) return "Month must be between 01-12!";
+        if (year < 1900 || year > currentYear) return `Year must be between 1900 and ${currentYear}!`;
         return "";
     };
     const validateForm = () => {
         let errors = {};
-        if (!formData.name.trim()) errors.name = "Ism maydonini to'ldirish shart!";
-        if (!formData.surname.trim()) errors.surname = "Familiya maydonini to'ldirish shart!";
-        if (!formData.username.trim()) errors.username = "Foydalanuvchi nomi maydonini to'ldirish shart!";
+        if (!formData.name.trim()) errors.name = "First name is required!";
+        if (!formData.surname.trim()) errors.surname = "Last name is required!";
+        if (!formData.username.trim()) errors.username = "Username is required!";
         if (!formData.phone_number.trim() || formData.phone_number.includes("_"))
-            errors.phone_number = "Telefon raqami";
+            errors.phone_number = "Phone number is required!";
         if (!formData.age.trim() || formData.age.includes("_")) {
-            errors.age = "Tug'ilgan sana (DD.MM.YYYY) maydonini to'ldirish shart!";
+            errors.age = "Birthdate (DD.MM.YYYY) is required!";
         } else {
             let ageError = validateDate(formData.age);
             if (ageError) errors.age = ageError;
         }
-        if (!selectedRegion) errors.region = "Viloyat maydonini to'ldirish shart!";
-        if (!selectedDistrict) errors.district = "Tuman maydonini to'ldirish shart!";
+        if (!selectedRegion) errors.region = "Region is required!";
+        if (!selectedDistrict) errors.district = "District is required!";
         if (formData.password && formData.password.length < 6)
-            errors.password = "Parol kamida 6 ta belgi bo'lishi kerak!";
+            errors.password = "Password must be at least 6 characters!";
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -221,7 +221,7 @@ const Layout = () => {
 
         // Validate immediately
         if (!validatePhone(value)) {
-            setErrors(prev => ({ ...prev, phone: "To'liq telefon raqam kiriting!" }));
+            setErrors(prev => ({ ...prev, phone: "Enter a complete phone number!" }));
         } else {
             setErrors(prev => ({ ...prev, phone: "" }));
         }
@@ -236,8 +236,7 @@ const Layout = () => {
         <section id="profile-section" >
             {profileData !== null ? (
                 <div className={`profile-container`}>
-                    {/* {success && <Success text={t.successMessage} />} */}
-                    <h1 id="edit-profile-heading">Profilni taxrirlash</h1>
+                    <h1 id="edit-profile-heading">Edit Profile</h1>
                     <div className={`edit-profile-content`}>
                         <div className={`left`}>
                             <div className={`edit-profile-container`}>
@@ -246,7 +245,7 @@ const Layout = () => {
                                         <div className={`input-row ${errors.name ? "err-border" : ""}`}>
                                             <input
                                                 type="text"
-                                                placeholder="Ism"
+                                                placeholder="First name"
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleChange}
@@ -258,7 +257,7 @@ const Layout = () => {
                                         <div className={`input-row ${errors.surname ? "err-border" : ""}`}>
                                             <input
                                                 type="text"
-                                                placeholder="Familiya"
+                                                placeholder="Last name"
                                                 name="surname"
                                                 value={formData.surname}
                                                 onChange={handleChange}
@@ -270,7 +269,7 @@ const Layout = () => {
                                         <div className={`input-row ${errors.username ? "err-border" : ""}`}>
                                             <input
                                                 type="text"
-                                                placeholder="Foydalanuvchi nomi"
+                                                placeholder="Username"
                                                 name="username"
                                                 value={formData.username}
                                                 onChange={handleChange}
@@ -323,7 +322,7 @@ const Layout = () => {
                                         <div className={`input-row ${errors.password ? "err-border" : ""}`}>
                                             <input
                                                 type="password"
-                                                placeholder="Parol kiriting"
+                                                placeholder="Enter password"
                                                 name="password"
                                                 value={formData.password}
                                                 onChange={handleChange}
@@ -341,8 +340,8 @@ const Layout = () => {
                                                 onChange={handleChange}
 
                                             >
-                                                <option value="male" >Erkak</option>
-                                                <option value="female" >Ayol</option>
+                                                <option value="male" >Male</option>
+                                                <option value="female" >Female</option>
                                             </select>
                                         </div>
                                         <div className={`input-row ${errors.region ? "err-border" : ""}`}>
@@ -353,7 +352,7 @@ const Layout = () => {
 
                                             >
                                                 <option value="" disabled >
-                                                    Viloyat tanlang
+                                                    Select region
                                                 </option>
                                                 {regions.map((region) => (
                                                     <option key={region.id} value={region.id} >
@@ -372,7 +371,7 @@ const Layout = () => {
                                                 onChange={handleDistrictChange}
                                             >
                                                 <option value="" disabled>
-                                                    Tuman tanlang
+                                                    Select district
                                                 </option>
                                                 {districts.map((district) => (
                                                     <option key={district.id} value={district.name_uz} >
@@ -385,14 +384,14 @@ const Layout = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <button type="submit">Saqlash</button>
+                                    <button type="submit">Save</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
             ) : (
-                <h1>Ba shou na xoii</h1>
+                <h1>No data available</h1>
             )}
         </section>
     );

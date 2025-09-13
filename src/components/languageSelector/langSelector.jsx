@@ -3,7 +3,7 @@ import style from "./langSelector.module.scss"
 
 const LangSelector = () => {
   return (
-    <div>Uz</div>
+    <div>Eng</div>
   )
 }
 

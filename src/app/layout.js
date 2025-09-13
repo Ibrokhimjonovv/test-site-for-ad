@@ -1,4 +1,3 @@
-import Header from "@/components/publicHeader/header";
 import { AccessProvider } from "@/contexts/contexts";
 import { Poppins } from "next/font/google";
 import "@/styles/global.scss"
@@ -13,8 +12,8 @@ const poppins = Poppins({
 })
 
 export const metadata = {
-  title: "Infinite Co",
-  description: "Created by Infinite Co",
+  title: "м17",
+  description: "Created by м17",
 };
 
 export default function RootLayout({ children }) {

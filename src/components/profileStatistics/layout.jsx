@@ -48,7 +48,7 @@ const StaticLayout = () => {
     const fetchSciences = async () => {
       try {
         const response = await fetch(`${api}/api/sciences/`);
-        if (!response.ok) throw new Error("Fanlarni yuklashda xatolik!");
+        if (!response.ok) throw new Error("Error while loading subjects!");
         const data = await response.json();
         setSciences(data);
       } catch (error) {
@@ -71,12 +71,12 @@ const StaticLayout = () => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Tarmoq xatosi: ${response.status} - ${errorText}`);
+          throw new Error(`Network error: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
         if (!data) {
-          console.error("Foydalanuvchini yuklashda xatoli");
+          console.error("Error while loading user");
           return;
         }
         const loginDate = data.last_login.split("T")[0];
@@ -105,7 +105,7 @@ const StaticLayout = () => {
           const response = await fetch(
             `${api}/tests/?science=${selectedScience}`
           );
-          if (!response.ok) throw new Error("Testlarni olishda xatolik!");
+          if (!response.ok) throw new Error("Error while fetching tests!");
           const data = await response.json();
           setTests(data);
         } catch (error) {
@@ -124,7 +124,7 @@ const StaticLayout = () => {
         const response = await fetch(
           `${api}/api/statistics/?user=${profileData.id}`
         );
-        if (!response.ok) throw new Error("Statistikani olishda xatolik!");
+        if (!response.ok) throw new Error("Error while fetching statistics!");
         const data = await response.json();
         const userTests = data.filter(
           (test) => Number(test.user) === Number(profileData.id)
@@ -198,7 +198,7 @@ const StaticLayout = () => {
                 max: 100,
                 title: {
                   display: true,
-                  text: "Foiz (%)",
+                  text: "Percentage (%)",
                 },
               },
             },
@@ -213,8 +213,8 @@ const StaticLayout = () => {
                   afterBody: function (tooltipItem) {
                     const pointData = tooltipItem[0].raw.additionalInfo;
                     return [
-                      `To'g'ri javoblar: ${pointData.correctAnswers} / ${pointData.totalQuestions}`,
-                      `Sariflangan vaqt: ${pointData.totalTime}`,
+                      `Correct answers: ${pointData.correctAnswers} / ${pointData.totalQuestions}`,
+                      `Time spent: ${pointData.totalTime}`,
                     ];
                   },
                 },
@@ -226,7 +226,7 @@ const StaticLayout = () => {
       {/* <div className={`for-width`}>
         <div className={`calendar-heatmap`}>
           <div className={`year-filter`}>
-            <label htmlFor="year-select" >Aktivlik yili</label>
+            <label htmlFor="year-select" >Activity year</label>
             <select
               id="year-select"
               value={calendarYear}
@@ -261,7 +261,7 @@ const StaticLayout = () => {
               tooltipDataAttrs={(value) => {
                 if (!value || !value.date) return null;
                 return {
-                  "data-tip": `Sana: ${value.date}, Urinishlar: ${value.count}`,
+                  "data-tip": `Date: ${value.date}, Attempts: ${value.count}`,
                 };
               }}
               showWeekdayLabels={true}

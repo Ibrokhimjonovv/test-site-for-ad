@@ -25,7 +25,7 @@ const Logout = () => {
         <button
             onClick={handleLogout}
         >
-            Chiqish
+            Logout
         </button>
     )
 }

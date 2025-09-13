@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import crown from "@/assets/crown.png";
 import "./layout.scss";
 import BalanceTopUp from '../top-up-balance/layout';
@@ -10,26 +10,24 @@ const Rating = ({ userId, user, allUsers, balance }) => {
 
     const formattedNumber = new Intl.NumberFormat('de-DE').format(balance ? balance : 0);
 
-
-
     return (
         <div id='rating'>
             <div className={`ichi`}>
-                <p>{allUsers?.user_count} ta foydalanuvchi ichidan</p>
+                <p>Out of {allUsers?.user_count} users</p>
                 <p>
                     <img src={crown.src} alt="crown" />
                     <span>{userId?.rank || 0}</span>
                 </p>
-                <p>O'rindasiz</p>
+                <p>Your Rank</p>
             </div>
             <div className={`line`}></div>
             <div className={`ni`}>
-                <p id='f-p'>Mening balansim</p>
+                <p id='f-p'>My Balance</p>
                 <div className={`results-cont`}>
                     <p>{formattedNumber} UZS</p>
                     {/* <BalanceTopUp user={user}/> */}
                     <Link href="/top-up-balance">
-                        Balansni oshirish
+                        Top Up Balance
                     </Link>
                 </div>
             </div>

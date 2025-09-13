@@ -31,12 +31,10 @@ const Login = () => {
 
     const handleTypeChange = (newType) => {
         setType(newType);
-        // Type o'zgarganda login maydonini tozalash
         setFormData(prev => ({
             ...prev,
             login: ''
         }));
-        // Xatoliklarni ham tozalash
         setErrors(prev => ({
             ...prev,
             login: ''
@@ -50,10 +48,9 @@ const Login = () => {
             login: value
         }));
 
-        // Validate phone number (faqat tozalangan raqamlar asosida)
         const cleaned = cleanPhoneNumber(value);
         if (cleaned.length < 9) {
-            setErrors(prev => ({ ...prev, login: "To'liq telefon raqam kiriting!" }));
+            setErrors(prev => ({ ...prev, login: "Enter full phone number!" }));
         } else {
             setErrors(prev => ({ ...prev, login: "" }));
         }
@@ -64,7 +61,7 @@ const Login = () => {
         replacement: { _: /\d/ },
         showMask: true,
         separate: true,
-        onChange: handlePhoneChange // Add onChange handler to the mask
+        onChange: handlePhoneChange
     });
 
 
@@ -73,12 +70,12 @@ const Login = () => {
         const newErrors = { ...errors };
 
         if (!formData.login.trim()) {
-            newErrors.login = "Telefon raqam yoki foydalanuvchi nomi kiritilishi shart";
+            newErrors.login = "Phone number or username is required";
             isValid = false;
         }
 
         if (!formData.password) {
-            newErrors.password = "Parol kiritilishi shart";
+            newErrors.password = "Password is required";
             isValid = false;
         }
 
@@ -119,27 +116,24 @@ const Login = () => {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.error || 'Kirish muvaffaqiyatsiz');
+                throw new Error(result.error || 'Login failed');
             }
 
             localStorage.setItem('accessEdu', result.access);
             localStorage.setItem('refreshEdu', result.refresh);
 
-            // Show notification that will persist through reload
-            showNewNotification("Muvaffaqiyatli kirildi!", "success", {
+            showNewNotification("Successfully logged in!", "success", {
                 persist: true,
-                reloadAfter: true // This will trigger page reload
+                reloadAfter: true
             });
 
-            // Don't need to call reload manually anymore
             setLoginStat(false);
             resteForm();
 
         } catch (error) {
-            // showNewNotification(error.message || 'Xatolik yuz berdi', "error");
             setErrors(prev => ({
                 ...prev,
-                form: error.message || 'Xatolik yuz berdi'
+                form: error.message || 'An error occurred'
             }));
         } finally {
             setLoading(false);
@@ -163,21 +157,21 @@ const Login = () => {
                         </svg>
                     </div>
                     <div className="logo">
-                        TestIshla<span>.</span>
+                        TestWork<span>.</span>
                     </div>
                     <h1>
-                        <span>Akkountingizga</span> kiring
+                        <span>Log in to your</span> account
                     </h1>
 
                     <div className="login-type">
                         <div className={`slide-type ${type === "username" ? "left" : "right"}`} >
-                            {type === "username" ? "Foydalanuvchi nomi" : "Telefon raqam"}
+                            {type === "username" ? "Username" : "Phone number"}
                         </div>
                         <div className={`username ${type === "username" ? "act" : ""}`} onClick={() => handleTypeChange("username")}  >
-                            Foydalanuvchi nomi
+                            Username
                         </div>
                         <div className={`phone ${type === "phone" ? "act" : ""}`} onClick={() => handleTypeChange("phone")}>
-                            Telefon raqam
+                            Phone number
                         </div>
                     </div>
 
@@ -188,7 +182,7 @@ const Login = () => {
                                 <input
                                     type="text"
                                     name="login"
-                                    placeholder='Foydalanuvchi nomini kiriting'
+                                    placeholder='Enter your username'
                                     value={formData.login}
                                     onChange={handleChange}
                                     className="us-input act"
@@ -210,7 +204,7 @@ const Login = () => {
                             <input
                                 type={show ? "password" : "text"}
                                 name="password"
-                                placeholder="Parol"
+                                placeholder="Password"
                                 value={formData.password}
                                 onChange={handleChange}
                             />
@@ -236,10 +230,10 @@ const Login = () => {
                             <button type="button" onClick={toggleAction}>
                                 {formData.action === 'signup'
                                     ? <>
-                                        Allaqachon akkauntingiz bormi? <span>Kirish</span>
+                                        Already have an account? <span>Login</span>
                                     </>
                                     : <>
-                                        Akkountingiz yo'qmi? <span>Ro'yxatdan o'tish</span>
+                                        Don't have an account? <span>Sign up</span>
                                     </>}
                             </button>
                         </div>
@@ -247,7 +241,7 @@ const Login = () => {
 
                         <div className="input-row">
                             <button type="submit" disabled={loading}>
-                                {loading ? 'Kirilmoqda...' : "Kirish"}
+                                {loading ? 'Logging in...' : "Login"}
                             </button>
                         </div>
                     </form>

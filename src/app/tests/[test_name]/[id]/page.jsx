@@ -75,7 +75,7 @@ export default function TestComponent() {
                 is_staff: opt.is_staff || false
               })),
               science_id: q.science_id,
-              science_name: scienceName, // Use the science name from the object key
+              science_name: scienceName,
               score: q.score || 1,
               time: q.time || null,
               image: q.text.includes('<img') ? q.text.match(/src="([^"]*)"/)[1] : null
@@ -96,7 +96,6 @@ export default function TestComponent() {
 
       } catch (error) {
         console.error('Error fetching test data:', error);
-        // router.push('/tests/all');
       } finally {
         setLoading(false);
       }
@@ -159,8 +158,8 @@ export default function TestComponent() {
   if (!currentTest) {
     return <div className="error-container">
       <div className="test-error-content">
-        <h2>Test topilmadi!</h2>
-        <button onClick={() => router.push('/tests/all/')}>Ortga qaytish</button>
+        <h2>Test not found!</h2>
+        <button onClick={() => router.push('/tests/all/')}>Go back</button>
       </div>
     </div>;
   }
@@ -175,115 +174,87 @@ export default function TestComponent() {
   }
 
   const finishTest = async () => {
-  try {
-    let finalScore = 0;
-
-    // Prepare answers data with validation
-    const answersData = [];
-    const validatedAnswers = {};
-    
-    // First validate all answers
-    for (const [index, answerId] of Object.entries(selectedAnswers)) {
-      const questionIndex = parseInt(index);
-      const question = questions[questionIndex];
+    try {
+      let finalScore = 0;
+      const answersData = [];
+      const validatedAnswers = {};
       
-      if (!question) {
-        console.error(`Question not found at index ${questionIndex}`);
-        continue;
+      for (const [index, answerId] of Object.entries(selectedAnswers)) {
+        const questionIndex = parseInt(index);
+        const question = questions[questionIndex];
+        
+        if (!question) continue;
+        
+        const selectedOption = question.options.find(opt => opt.id === answerId);
+        if (!selectedOption) continue;
+        
+        const correctOption = question.options.find(opt => opt.is_staff);
+        if (correctOption && answerId === correctOption.id) {
+          finalScore++;
+        }
+        
+        answersData.push({
+          question_id: question.id,
+          selected_option_id: answerId,
+        });
+        
+        validatedAnswers[questionIndex] = answerId;
       }
-      
-      const selectedOption = question.options.find(opt => opt.id === answerId);
-      if (!selectedOption) {
-        console.error(`Option ${answerId} not found in question ${question.id}`);
-        continue;
-      }
-      
-      // Count correct answers
-      const correctOption = question.options.find(opt => opt.is_staff);
-      if (correctOption && answerId === correctOption.id) {
-        finalScore++;
-      }
-      
-      // Add to validated answers
-      answersData.push({
-        question_id: question.id,
-        selected_option_id: answerId,
-      });
-      
-      validatedAnswers[questionIndex] = answerId;
-    }
 
-    // Calculate time metrics
-    const totalTimeTaken = currentTest.testTime * 60 - timeLeft;
-    const timePerQuestion = totalTimeTaken / questions.length;
+      const totalTimeTaken = currentTest.testTime * 60 - timeLeft;
 
-    // Prepare statistics data
-    const resultData = {
-      user: profileData?.id,
-      test_title: currentTest?.title || "Test",
-      correct_answers: finalScore,
-      incorrect_answers: questions.length - finalScore,
-      unanswered_questions: questions.length - Object.keys(validatedAnswers).length,
-      total_questions: questions.length,
-      percentage_correct: ((finalScore / questions.length) * 100).toFixed(2),
-      total_time_taken: totalTimeTaken,
-      time_per_question: {1:1},
-    };
+      const resultData = {
+        user: profileData?.id,
+        test_title: currentTest?.title || "Test",
+        correct_answers: finalScore,
+        incorrect_answers: questions.length - finalScore,
+        unanswered_questions: questions.length - Object.keys(validatedAnswers).length,
+        total_questions: questions.length,
+        percentage_correct: ((finalScore / questions.length) * 100).toFixed(2),
+        total_time_taken: totalTimeTaken,
+        time_per_question: {1:1},
+      };
 
-    // Send requests
-    const [statsResponse, finishResponse] = await Promise.all([
-      fetch(`${api}/edu_maktablar/statistics/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
-        },
-        body: JSON.stringify(resultData),
-      }),
-      fetch(`${api}/edu_maktablar/finish/${testId}/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
-        },
-        body: JSON.stringify({ 
-          answers: answersData,
-          user_id: profileData?.id 
+      const [statsResponse, finishResponse] = await Promise.all([
+        fetch(`${api}/edu_maktablar/statistics/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
+          },
+          body: JSON.stringify(resultData),
         }),
-      })
-    ]);
+        fetch(`${api}/edu_maktablar/finish/${testId}/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("accessEdu")}`
+          },
+          body: JSON.stringify({ 
+            answers: answersData,
+            user_id: profileData?.id 
+          }),
+        })
+      ]);
 
-    // Handle responses
-    if (!statsResponse.ok) {
-      const statsError = await statsResponse.json();
-      console.error("Statistics error:", statsError);
-      throw new Error("Natijalarni saqlashda xato yuz berdi");
+      if (!statsResponse.ok) throw new Error("Error saving statistics");
+      if (!finishResponse.ok) throw new Error("Error finishing test");
+
+      setScore(finalScore);
+      setTestStatus('completed');
+
+    } catch (error) {
+      console.error("Error finishing test:", error);
+      alert(`Error finishing test: ${error.message}`);
     }
-
-    if (!finishResponse.ok) {
-      const finishError = await finishResponse.json();
-      console.error("Finish error:", finishError);
-      throw new Error("Testni yakunlashda xato yuz berdi");
-    }
-
-    const finishResult = await finishResponse.json();
-    console.log("Finish result:", finishResult);
-
-    setScore(finalScore);
-    setTestStatus('completed');
-
-  } catch (error) {
-    console.error("Testni yakunlashda xato:", error);
-    alert(`Testni yakunlashda xato yuz berdi: ${error.message}`);
-  }
-};
+  };
 
   if (questions.length === 0) {
     return (
       <div className="test-container">
         <div className="no-questions">
-          <p>Ushbu testda savollar mavjud emas</p>
-          <button onClick={() => router.push('/tests/all')}>Orqaga qaytish</button>
+          <p>This test has no questions</p>
+          <button onClick={() => router.push('/tests/all')}>Go back</button>
         </div>
       </div>
     );
@@ -308,7 +279,7 @@ export default function TestComponent() {
 
       <div className="all-questions">
         <div className="opener" onClick={() => setOpTracker(true)}>
-          <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="48" d="M184 112l144 144-144 144" /></svg>
         </div>
         <ProgressTracker
           test={{
@@ -437,9 +408,9 @@ const ProgressTracker = ({
 
   const formatScienceTitle = (title) => {
     if (title.includes("_kasbiy_stan") || title.includes("Kasbiy_standart")) {
-      return `${title.split('_')[0]} (Kasbiy standart)`;
+      return `${title.split('_')[0]} (Professional standard)`;
     } else if (title.includes("_ped_mahorat") || title.includes("Pedmahorat")) {
-      return `${title.split('_')[0]} (Pedagogik mahorat)`;
+      return `${title.split('_')[0]} (Pedagogical mastery)`;
     }
     return title;
   };
@@ -449,7 +420,7 @@ const ProgressTracker = ({
   return (
     <div className={`progress-tracker ${opener ? "act" : ""}`}>
       <div className="closer" onClick={() => setOpener(false)}>
-        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="48" d="M184 112l144 144-144 144" /></svg>
       </div>
       <h2>{test.title}</h2>
       {scienceGroups.map((science) => (
@@ -457,7 +428,7 @@ const ProgressTracker = ({
           <div className="subject-header">
             <h3>{formatScienceTitle(science.name)}</h3>
             <span className="question-count">
-              {science.count} ta
+              {science.count} questions
             </span>
           </div>
           <div className="subject-questions">
@@ -470,7 +441,7 @@ const ProgressTracker = ({
                   key={question.id}
                   className={`circle ${status} ${isCurrent ? "current" : ""}`}
                   onClick={() => setCurrentQuestionIndex(question.globalIndex)}
-                  title={`Savol ${question.displayIndex + 1} - ${answerLetter ? `Tanlangan variant: ${answerLetter}` : 'Javob berilmagan'}`}
+                  title={`Question ${question.displayIndex + 1} - ${answerLetter ? `Selected option: ${answerLetter}` : 'Unanswered'}`}
                 >
                   {question.displayIndex + 1}
                   {answerLetter && <span className="selected-option">{answerLetter}</span>}

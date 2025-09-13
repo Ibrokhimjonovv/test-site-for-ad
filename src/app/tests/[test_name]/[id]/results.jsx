@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import "./results.scss";
+import "@/styles/results.scss";
 import parse from "html-react-parser";
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -154,8 +154,8 @@ const Results = ({
     const percentage = Math.round((actualScore / questions.length) * 100);
 
     return (
-        <div className="test-container">
-            <div className="test-result">
+        <div className="results">
+            <div className="results-box">
                 <h2>{testStatus === 'timeout' ? "Vaqt tugadi!" : "Test yakunlandi!"}</h2>
                 <p>Siz {questions.length} ta savoldan {actualScore} tasiga to'g'ri javob berdingiz</p>
                 <p>To'g'ri javoblar foizi: {percentage}%</p>

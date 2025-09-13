@@ -40,7 +40,7 @@ const BalanceTopUp = () => {
           );
           setRegions(fdata);
         } else {
-          console.error("Viloyatlar ma'lumotini olishda xatolik yuz berdi.");
+          console.error("Error occurred while fetching regions data.");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -54,30 +54,16 @@ const BalanceTopUp = () => {
 
   const handlePayment = async () => {
     if (!amount || isNaN(amount) || amount <= 0) {
-      setError("Iltimos, to'g'ri summa kiriting!");
+      setError("Please enter a valid amount!");
       return;
     } else if (amount < 1000) {
-      setError("Minimal 1000 so'm kiriting!");
+      setError("Minimum amount is 1000 UZS!");
       return;
     }
     setShaxloading(true);
 
     try {
       const userId = profileData.id;
-      // const orderRes = await fetch(`${api}/api/get_order_id/`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ user_id: userId }),
-      // });
-      // const orderData = await orderRes.json();
-      // const orderId = orderData.order_id;
-      // console.log(
-      //   parseInt(amount),
-      //   paymentMethod,
-      //   orderId,
-      //   profileData.name,
-      //   regions[0].name_uz
-      // );
 
       const orderCreateRes = await fetch(
         `${api}/order/create/`,
@@ -97,12 +83,11 @@ const BalanceTopUp = () => {
       const orderCreateData = await orderCreateRes.json();
       if (orderCreateData.payment_link) {
         window.location.href = orderCreateData.payment_link;
-        // window.open(orderCreateData.payment_link, "_blank");
       } else {
-        setError("To'lov linkini olishda xatolik yuz berdi!");
+        setError("Error occurred while generating payment link!");
       }
     } catch (error) {
-      setError("Xatolik yuz berdi, qayta urinib ko'ring!");
+      setError("An error occurred, please try again!");
     } finally {
       setShaxloading(false);
     }
@@ -112,15 +97,11 @@ const BalanceTopUp = () => {
     return <NotFound />
   }
 
-
   return (
     <div>
       <div className={`up-form`}>
-        <h2><span>Hisobni</span> to'ldirish</h2>
+        <h2><span>Top up</span> balance</h2>
         <div className={`modal-content`}>
-          {/* <h3>
-            To'lov usulini tanlang: <span>{paymentMethod === "payme" ? "Payme" : "Click"}</span> orqali
-          </h3> */}
           <div className={`payment-method`}>
             <button
               onClick={() => setPaymentMethod("payme")}
@@ -136,20 +117,19 @@ const BalanceTopUp = () => {
             ></button>
           </div>
           <div className={`top-up-modal`}>
-
             {
               paymentMethod === 'click' ? (
-                <div>Ayni paytda <span style={{ color: "#ff8a00" }}>click</span> orqali to‘lovni amalga oshirish imkoni mavjud emas. Noqulaylik uchun uzr so‘raymiz.</div>
+                <div>At the moment, payment via <span style={{ color: "#ff8a00" }}>Click</span> is not available. We apologize for the inconvenience.</div>
               ) : (
                 <>
                   <p>
-                    <span className="st">{profileData.surname} {profileData.name}</span> ning balansini oshirish!
+                    Increase balance of <span className="st">{profileData.surname} {profileData.name}</span>!
                   </p>
-                  <p>Hozirgi balans: <span className="s">{profileData.balance}</span> so'm</p>
+                  <p>Current balance: <span className="s">{profileData.balance}</span> UZS</p>
                   <div id="inp-w-s">
                     <input
                       type="text"
-                      placeholder="Summani kiriting (so'm)"
+                      placeholder="Enter amount (UZS)"
                       name="total_cost"
                       value={formatAmount(amount)}
                       onChange={handleChange}
@@ -173,7 +153,7 @@ const BalanceTopUp = () => {
                       disabled={shaxLoading}
                       className={`${shaxLoading ? "ac" : ""}`}
                     >
-                      {shaxLoading ? "To'lov qilinmoqda..." : "To'lov qilish"}
+                      {shaxLoading ? "Processing payment..." : "Make Payment"}
                     </button>
                   </div>
                 </>

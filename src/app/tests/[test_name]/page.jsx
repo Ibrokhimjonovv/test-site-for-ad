@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import "./layout.scss";
 import { AccessContext } from '@/contexts/contexts';
@@ -15,117 +15,65 @@ function Modal({ children, onClose, showModal }) {
   );
 }
 
-const CategoriesSkeleton = () => {
-  return (
-    <div className="menu skeleton-menu">
-      {[...Array(5)].map((_, index) => (
-        <div key={index} className="skeleton-category"></div>
-      ))}
-    </div>
-  );
-};
-
-const TestCardsSkeleton = () => {
-  return (
-    <div className="tests-content skeleton-tests">
-      {[...Array(6)].map((_, index) => (
-        <div key={index} className="skeleton-test-card">
-          <div className="skeleton-image"></div>
-          <div className="skeleton-text">
-            <div className="skeleton-line"></div>
-            <div className="skeleton-line"></div>
-          </div>
-          <div className="skeleton-footer">
-            <div className="skeleton-line"></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 export default function TestsLayout() {
   const router = useRouter();
   const pathname = usePathname();
   const [activeButton, setActiveButton] = useState('all');
-  const [filteredTests, setFilteredTests] = useState([]);
   const [selectedTest, setSelectedTest] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [tests, setTests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { setLoginStat, profileData, setProfileData, showNewNotification } = useContext(AccessContext)
-  const [error, setError] = useState('')
+  const { setLoginStat, profileData, setProfileData, showNewNotification } = useContext(AccessContext);
+  const [error, setError] = useState('');
   const [stLoading, setStLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        // Fetch categories
-        const categoriesRes = await fetch('/site/categories');
-        const categoriesData = await categoriesRes.json();
+  // ✅ Default categories
+  const [categories] = useState([
+    { id: 1, title: "Mathematics", isNew: true },
+    { id: 2, title: "History", isNew: false },
+    { id: 3, title: "Geography", isNew: true },
+    { id: 4, title: "Physics", isNew: false },
+    { id: 5, title: "English", isNew: true },
+  ]);
 
-        // Safely handle categories data
-        const categoriesArray = Array.isArray(categoriesData?.data.data) ? categoriesData.data.data : [];
-        setCategories(categoriesArray);
-        
-        // Fetch tests
-        const testsRes = await fetch('/site/tests');
-        const testsData = await testsRes.json();
+  // ✅ Default tests
+  const [tests] = useState({
+    tests: [
+      { id: 101, title: "Algebra Basics", testDescription: "Simple algebra equations", category: 1, price: 0, time: 30, tests_count: 15, isNew: true },
+      { id: 102, title: "Geometry Shapes", testDescription: "Angles and triangles", category: 1, price: 2000, time: 45, tests_count: 20 },
+      { id: 103, title: "World War II", testDescription: "Key historical events", category: 2, price: 1500, time: 40, tests_count: 18 },
+      { id: 104, title: "Uzbek History", testDescription: "Important Uzbek figures", category: 2, price: 0, time: 25, tests_count: 10 },
+      { id: 105, title: "Continents", testDescription: "Countries and capitals", category: 3, price: 3000, time: 60, tests_count: 30 },
+      { id: 106, title: "Mountains & Rivers", testDescription: "Geography landmarks", category: 3, price: 0, time: 20, tests_count: 12 },
+      { id: 107, title: "Mechanics", testDescription: "Force and motion", category: 4, price: 5000, time: 90, tests_count: 25 },
+      { id: 108, title: "Optics", testDescription: "Light and reflection", category: 4, price: 0, time: 40, tests_count: 15 },
+      { id: 109, title: "Grammar Test", testDescription: "English grammar rules", category: 5, price: 2500, time: 30, tests_count: 20 },
+      { id: 110, title: "Vocabulary Quiz", testDescription: "Learn new words", category: 5, price: 0, time: 15, tests_count: 10, isNew: true },
+    ]
+  });
 
-        // Safely handle tests data
-        const testsArray = Array.isArray(testsData?.data) ? testsData.data : [];
-        setTests({ tests: testsArray });
-        setFilteredTests({ tests: testsArray });
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setCategories([]);
-        setTests({ tests: [] });
-        setFilteredTests({ tests: [] });
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
+  const [filteredTests, setFilteredTests] = useState(tests);
 
   function formatCategoryLink(title) {
     return title?.toLowerCase().replace(/\s+/g, '-') || '';
   }
 
-  useEffect(() => {
-    if (!pathname || loading) return;
-
-    const currentCategory = pathname.split('/').pop();
-
-    if (pathname === '/tests/all' || pathname === '/tests') {
-      setActiveButton('all');
-      setFilteredTests(tests);
-    } else if (currentCategory) {
-      setActiveButton(currentCategory);
-      const category = categories.find(cat =>
-        formatCategoryLink(cat.category_title) === currentCategory
-      );
-
-      if (category) {
-        const filtered = tests.tests.filter(test => test.category === category.id);
-        setFilteredTests({ tests: filtered });
-        document.title = `${category.category_title} - Infinite Co`;
-      }
-    }
-  }, [pathname, categories, tests, loading]);
-
   function handleCategoryClick(categoryId, category_title) {
     const formattedLink = formatCategoryLink(category_title);
-    setActiveButton(formattedLink);
+
+    // ✅ activeButton endi categoryId bo'ladi
+    setActiveButton(categoryId);
+
+    // ✅ shu categoryga tegishli testlarni filter qilamiz
     const filtered = tests.tests.filter(test => test.category === categoryId);
     setFilteredTests({ tests: filtered });
-    router.push('/tests/' + formattedLink);
+
+    // ✅ url o'zgaradi
+    router.push('/tests/' + categoryId);
   }
+
 
   function handleAllClick() {
     setActiveButton('all');
+    setFilteredTests(tests);
     router.push('/tests/all');
   }
 
@@ -134,19 +82,20 @@ export default function TestsLayout() {
     setShowModal(true);
   }
 
-  function formatTestName(testName) {
-    return testName?.trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]/g, '');
+  function formatTestTime(time) {
+    if (!time) return "Unlimited time";
+    const hours = Math.floor(time / 60);
+    const minutes = time % 60;
+    if (hours > 0 && minutes > 0) return `${hours} hours ${minutes} minutes`;
+    if (hours > 0) return `${hours} hours`;
+    return `${minutes} minutes`;
   }
 
   const startTest = async () => {
     setStLoading(true);
     try {
-      const token = localStorage.getItem("accessEdu");
-      if (!token) {
-        showNewNotification("Token yo'q", "error");
+      if (!profileData) {
+        showNewNotification("Please login first!", "error");
         return;
       }
 
@@ -155,115 +104,39 @@ export default function TestsLayout() {
         balance: prev.balance - selectedTest.price
       }));
 
-      const response = await fetch(`${api}/edu_maktablar/start-test/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          test_id: selectedTest.id,
-        }),
-      });
+      showNewNotification("Test started successfully!", "success", true);
+      router.push(`/tests/${formatCategoryLink(selectedTest.title)}/${selectedTest.id}`);
 
-      if (response.ok) {
-        showNewNotification("Test muvaffaqiyatli boshlandi!", "success", true);
-        router.push(`/tests/${formatTestName(selectedTest.title)}/${selectedTest.id}`);
-      } else {
-        const errorData = await response.json();
-        showNewNotification(
-          "Balansingizda mablag' yetarli emas!",
-          "error"
-        );
-
-        setProfileData(prev => ({
-          ...prev,
-          balance: prev.balance + selectedTest.price
-        }));
-        setError(errorData.detail);
-      }
     } catch (error) {
-      showNewNotification("Xatolik yuz berdi!", "error");
+      showNewNotification("An error occurred!", "error");
       setError(error);
     } finally {
       setStLoading(false);
     }
   };
 
-  function formatTestTime(timeString) {
-    if (!timeString) return "Vaqt cheklanmagan";
-
-    if (typeof timeString === 'string' && timeString.match(/^\d{1,2}:\d{2}:\d{2}$/)) {
-      const [hours, minutes] = timeString.split(':').map(Number);
-
-      if (hours > 0 && minutes > 0) {
-        return `${hours} soat ${minutes} daqiqa`;
-      } else if (hours > 0) {
-        return `${hours} soat`;
-      } else if (minutes > 0) {
-        return `${minutes} daqiqa`;
-      } else {
-        return "Vaqt cheklanmagan";
-      }
-    }
-
-    const timeNumber = Number(timeString);
-    if (!isNaN(timeNumber)) {
-      if (timeNumber <= 0) return "Vaqt cheklanmagan";
-
-      const hours = Math.floor(timeNumber / 60);
-      const minutes = timeNumber % 60;
-
-      if (hours > 0 && minutes > 0) {
-        return `${hours} soat ${minutes} daqiqa`;
-      } else if (hours > 0) {
-        return `${hours} soat`;
-      } else {
-        return `${minutes} daqiqa`;
-      }
-    }
-
-    return "Vaqt cheklanmagan";
-  }
-
-  if (loading) {
-    return (
-      <div className='tests-page'>
-        <h1 className='page-title'>Testlar</h1>
-        <CategoriesSkeleton />
-        <TestCardsSkeleton />
-      </div>
-    );
-  }
-
   return (
     <div className='tests-page'>
-      <h1 className='page-title'>Testlar</h1>
+      <h1 className='page-title'>Tests</h1>
       <div className="menu">
         <button
           className={activeButton === 'all' ? 'active' : ''}
           onClick={handleAllClick}
         >
-          Barchasi
+          All
         </button>
-        {Array.isArray(categories) && categories.length > 0 ? (
-          categories.map((category) => {
-            const formattedLink = formatCategoryLink(category.title);
-            return (
-              <button
-                key={category.id}
-                className={activeButton === formattedLink ? 'active' : ''}
-                onClick={() => handleCategoryClick(category.id, category.title)}
-              >
-                {category.title}
-                {category.isNew && <div className="new active">Yangi</div>}
-              </button>
-            );
-          })
-        ) : (
-          <div className="no-categories">Kategoriyalar mavjud emas</div>
-        )}
+        {categories.map((category) => (
+          <button
+            key={category.id}
+            className={activeButton === category.id ? 'active' : ''} // ✅ id bilan solishtirilyapti
+            onClick={() => handleCategoryClick(category.id, category.title)}
+          >
+            {category.title}
+            {category.isNew && <div className="new active">New</div>}
+          </button>
+        ))}
       </div>
+
 
       <div className="tests-content">
         {Array.isArray(filteredTests?.tests) && filteredTests.tests.length > 0 ? (
@@ -276,31 +149,28 @@ export default function TestsLayout() {
               <div className="card-top">
                 <div className="card-top-top">
                   <img
-                    src={test.testImage || "https://cdn.testbor.com/0/quiz-category/01JPMA7KTREH7RMB957PAQG926.png"}
-                    alt={test.title || "Test rasmi"}
-                    onError={(e) => {
-                      e.target.src = "https://cdn.testbor.com/0/quiz-category/01JPMA7KTREH7RMB957PAQG926.png";
-                    }}
+                    src={test.testImage || "/logo-m.png"}
+                    alt={test.title || "Test image"}
                   />
-                  {test.isNew && <div className="new active">Yangi</div>}
+                  {test.isNew && <div className="new active">New</div>}
                 </div>
                 <div className="card-top-bottom">
-                  <p>{test.title || "Test nomi"}</p>
-                  <p>{test.testDescription || "Test tavsifi"}</p>
+                  <p>{test.title}</p>
+                  <p>{test.testDescription}</p>
                 </div>
               </div>
               <div className="card-bottom">
-                <p className={`${test.price === "Bepul" ? "" : "green"}`}>
-                  {test.price === 0 ? "Bepul" : `${test.price} UZS`}
+                <p className={`${test.price === 0 ? "" : "green"}`}>
+                  {test.price === 0 ? "Free" : `${test.price} USD`}
                 </p>
                 <span></span>
-                {formatTestTime(test.time) || "0 daqiqa"}   
+                {formatTestTime(test.time)}
               </div>
             </div>
           ))
         ) : (
           <div className="no-tests">
-            <p>Ushbu kategoriyada testlar mavjud emas</p>
+            <p>No tests available in this category</p>
           </div>
         )}
       </div>
@@ -311,13 +181,13 @@ export default function TestsLayout() {
             <h2>{selectedTest.title}</h2>
             <p>{selectedTest.testDescription}</p>
             <div className="test-details">
-              <p><span>Savollar soni:</span> {selectedTest.tests_count || "Mavjud emas"}</p>
-              <p><span>Vaqt:</span> {formatTestTime(selectedTest.time)}</p>
-              <p><span>Narxi:</span> {selectedTest.price} UZS</p>
+              <p><span>Number of questions:</span> {selectedTest.tests_count}</p>
+              <p><span>Time:</span> {formatTestTime(selectedTest.time)}</p>
+              <p><span>Price:</span> {selectedTest.price === 0 ? "Free" : `${selectedTest.price} UZS`}</p>
             </div>
             <div className="modal-actions">
               <button className="cancel-button" onClick={() => setShowModal(false)}>
-                Bekor qilish
+                Cancel
               </button>
               {
                 profileData !== null ? (
@@ -327,13 +197,13 @@ export default function TestsLayout() {
                     onClick={startTest}
                     disabled={stLoading}
                   >
-                    {stLoading ? "Boshlanmoqda..." : "Boshlash"}
+                    {stLoading ? "Starting..." : "Start"}
                   </button>
                 ) : (
                   <button id='st' onClick={() => {
                     setLoginStat(true)
                     setShowModal(false)
-                  }}>Kirish</button>
+                  }}>Login</button>
                 )
               }
             </div>

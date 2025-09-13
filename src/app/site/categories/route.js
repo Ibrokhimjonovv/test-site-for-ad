@@ -4,7 +4,7 @@ export async function GET() {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://37.27.23.255:2222';
   
   try {
-    const response = await fetch(`${API_BASE}/edu_maktablar/all_category/`, {
+    const response = await fetch(`https://test.smartcoders.uz/student_test/test/all-category/`, {
       headers: {
         'Content-Type': 'application/json'
       }

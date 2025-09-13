@@ -10,27 +10,16 @@ const AccessProvider = ({ children }) => {
     const [loginStat, setLoginStat] = useState(false);
     const [registerStat, setRegisterStat] = useState(false);
 
-    // const [access, setAccess] = useState(false);
-    // useEffect(() => {
-    //     const savedAccess = localStorage.getItem("access");
-    //     if (savedAccess) {
-    //         setAccess(true)
-    //     }
-    // }, [])
-
     useEffect(() => {
         if (loginStat === true || registerStat === true) {
             document.body.classList.add("over");
         } else {
-            document.body.classList.remove("over")
+            document.body.classList.remove("over");
         }
-    }, [loginStat, registerStat])
-
-
+    }, [loginStat, registerStat]);
 
     const [profileLoading, setProfileLoading] = useState(false);
     const [profileData, setProfileData] = useState(null);
-
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -38,7 +27,7 @@ const AccessProvider = ({ children }) => {
             try {
                 const token = localStorage.getItem("accessEdu");
 
-                const response = await fetch('/site/me', { // API route'ga yo'naltirish
+                const response = await fetch("/site/me", {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -48,14 +37,14 @@ const AccessProvider = ({ children }) => {
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    throw new Error(`Tarmoq xatosi: ${response.status} - ${errorText}`);
+                    throw new Error(`Network error: ${response.status} - ${errorText}`);
                 }
 
                 const data = await response.json();
                 setProfileData(data);
             } catch (error) {
                 console.error("Failed to fetch profile data:", error.message);
-                // Foydalanuvchiga xato haqida xabar berish
+                // Show error message to user
             } finally {
                 setProfileLoading(false);
             }
@@ -64,36 +53,6 @@ const AccessProvider = ({ children }) => {
     }, []);
 
     const [allUsers, setAllUsers] = useState([]);
-
-
-    // useEffect(() => {
-    //     const users = async () => {
-    //         try {
-    //             const response = await fetch(`${api}/api/users_count/`, {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //             });
-
-    //             if (!response.ok) {
-    //                 const errorText = await response.text();
-    //                 throw new Error(`Tarmoq xatosi: ${response.status} - ${errorText}`);
-    //             }
-
-    //             const data = await response.json();
-
-    //             // Ma'lumot obyekt yoki ro'yxat bo'lsa, setProfileData orqali holatga solamiz
-    //             setAllUsers(data);
-
-
-    //         } catch (error) {
-    //             console.error("Failed to fetch profile data:", error.message);
-    //         }
-    //     };
-
-    //     users();
-    // }, []);
 
     const [notification, setNotification] = useState(null);
     const [showNotification, setShowNotification] = useState(false);
@@ -104,7 +63,7 @@ const AccessProvider = ({ children }) => {
         const newNotification = {
             text,
             type,
-            timestamp: Date.now()
+            timestamp: Date.now(),
         };
 
         // Show immediately
@@ -113,11 +72,14 @@ const AccessProvider = ({ children }) => {
 
         // Persist to localStorage if needed
         if (persist) {
-            localStorage.setItem('pendingNotification', JSON.stringify({
-                ...newNotification,
-                // Extended lifetime for reload cases
-                extendedLifetime: reloadAfter
-            }));
+            localStorage.setItem(
+                "pendingNotification",
+                JSON.stringify({
+                    ...newNotification,
+                    // Extended lifetime for reload cases
+                    extendedLifetime: reloadAfter,
+                })
+            );
         }
 
         // Auto-hide after 5 seconds
@@ -126,7 +88,7 @@ const AccessProvider = ({ children }) => {
             setTimeout(() => {
                 setNotification(null);
                 if (!reloadAfter) {
-                    localStorage.removeItem('pendingNotification');
+                    localStorage.removeItem("pendingNotification");
                 }
             }, 300);
         }, 5000);
@@ -144,7 +106,7 @@ const AccessProvider = ({ children }) => {
     // Check for pending notifications on mount (with extended lifetime support)
     useEffect(() => {
         const checkForNotifications = () => {
-            const storedNotification = localStorage.getItem('pendingNotification');
+            const storedNotification = localStorage.getItem("pendingNotification");
             if (storedNotification) {
                 const parsedNotification = JSON.parse(storedNotification);
 
@@ -165,20 +127,19 @@ const AccessProvider = ({ children }) => {
                         setShowNotification(false);
                         setTimeout(() => {
                             setNotification(null);
-                            localStorage.removeItem('pendingNotification');
+                            localStorage.removeItem("pendingNotification");
                         }, 300);
                     }, remainingTime);
                 } else {
-                    localStorage.removeItem('pendingNotification');
+                    localStorage.removeItem("pendingNotification");
                 }
             }
         };
 
         checkForNotifications();
-        window.addEventListener('popstate', checkForNotifications);
-        return () => window.removeEventListener('popstate', checkForNotifications);
+        window.addEventListener("popstate", checkForNotifications);
+        return () => window.removeEventListener("popstate", checkForNotifications);
     }, []);
-
 
     return (
         <AccessContext.Provider
@@ -187,9 +148,13 @@ const AccessProvider = ({ children }) => {
                 setLoginStat,
                 registerStat,
                 setRegisterStat,
-                profileData, setProfileData, allUsers, profileLoading, setProfileLoading,
+                profileData,
+                setProfileData,
+                allUsers,
+                profileLoading,
+                setProfileLoading,
                 notification,
-                showNewNotification
+                showNewNotification,
             }}
         >
             {children}
@@ -202,7 +167,6 @@ const AccessProvider = ({ children }) => {
                     setNotification(null);
                 }}
             />
-
         </AccessContext.Provider>
     );
 };

@@ -37,21 +37,21 @@ const Header = ({ timeLeft, setTimeLeft, testStatus, currentTest, currentQuestio
                 <h2>{currentTest.testTitle}</h2>
                 <div className="test-info">
 
-                    <div className="timer">Qolgan vaqt: {formatTime(timeLeft)}</div>
+                    <div className="timer">Time left: {formatTime(timeLeft)}</div>
                     <div className="progress">
-                        Savol {currentQuestionIndex + 1} / {questions.length}
+                        Question {currentQuestionIndex + 1} / {questions.length}
                     </div>
                     <div className="end-test" onClick={() => setAggModal(true)}>
-                        Testni yakunlash
+                        Finish the test
                     </div>
                 </div>
             </div>
             <div className={`agg-modal ${aggModal ? "act" : ""}`}>
                 <div className="agg-content">
-                    <h2>Haqiqatdan ham testni yakunlamoqchimisiz?</h2>
+                    <h2>Are you sure you want to finish the test?</h2>
                     <div className="agg-actions">
-                        <button className="cancel-button" onClick={() => setAggModal(false)}>Yo'q</button>
-                        <button className="end-button" onClick={finishTest}>Ha</button>
+                        <button className="cancel-button" onClick={() => setAggModal(false)}>No</button>
+                        <button className="end-button" onClick={finishTest}>Yes</button>
                     </div>
                 </div>
             </div>
