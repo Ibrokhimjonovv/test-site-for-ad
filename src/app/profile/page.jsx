@@ -1,7 +1,7 @@
 import ProfileLayout from "./layout";
 
 export const metadata = {
-    title: "Shaxsiy xisob"
+    title: "Profile"
 }
 
 export default function ProfilePage() {
